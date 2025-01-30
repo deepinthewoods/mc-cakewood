@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cakewood:item/dark_oak_cake_wood"
+  }
+}

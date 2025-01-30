@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "cakewood:cake_wood"
+    },
+    "W": {
+      "item": "minecraft:bamboo_planks"
+    }
+  },
+  "pattern": [
+    "WWW",
+    "CCC",
+    "WWW"
+  ],
+  "result": {
+    "count": 1,
+    "id": "cakewood:bamboo_cake_wood"
+  }
+}
