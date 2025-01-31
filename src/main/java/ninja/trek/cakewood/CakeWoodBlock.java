@@ -12,6 +12,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -21,7 +22,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
 
 public class CakeWoodBlock extends Block {
-    public static final int MAX_BITES = 7;
+    public static final int MAX_BITES = 8;
     public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);
     public static final IntProperty BOTTOM_BITES = IntProperty.of("bottom_bites", 0, MAX_BITES);
     public static final DirectionProperty TOP_FACING = DirectionProperty.of("top_facing",
@@ -50,10 +51,12 @@ public class CakeWoodBlock extends Block {
         Direction topFacing = state.get(TOP_FACING);
         Direction bottomFacing = state.get(BOTTOM_FACING);
 
-        return VoxelShapes.union(
-                getHalfShape(topBites, true, topFacing),
-                getHalfShape(bottomBites, false, bottomFacing)
-        );
+        VoxelShape topShape = topBites >= MAX_BITES ? VoxelShapes.empty() :
+                getHalfShape(topBites, true, topFacing);
+        VoxelShape bottomShape = bottomBites >= MAX_BITES ? VoxelShapes.empty() :
+                getHalfShape(bottomBites, false, bottomFacing);
+
+        return VoxelShapes.union(topShape, bottomShape);
     }
 
     private VoxelShape getHalfShape(int bites, boolean isTop, Direction facing) {
@@ -65,43 +68,42 @@ public class CakeWoodBlock extends Block {
         float yMin = isTop ? 0.5f : 0f;
         float yMax = isTop ? 1.0f : 0.5f;
 
-        // Create the base shape based on the direction of bites
         return switch (facing) {
             case NORTH -> VoxelShapes.cuboid(
-                    0.0625f,                    // xMin (1/16)
+                    0.0f,                       // xMin
                     yMin,                       // yMin
-                    0.0625f + biteSize/16.0f,   // zMin (adjusted by bites)
-                    0.9375f,                    // xMax (15/16)
+                    0.0f + biteSize/16.0f,      // zMin (adjusted by bites)
+                    1.0f,                       // xMax
                     yMax,                       // yMax
-                    0.9375f                     // zMax (15/16)
+                    1.0f                        // zMax
             );
             case SOUTH -> VoxelShapes.cuboid(
-                    0.0625f,                    // xMin
+                    0.0f,                       // xMin
                     yMin,                       // yMin
-                    0.0625f,                    // zMin
-                    0.9375f,                    // xMax
+                    0.0f,                       // zMin
+                    1.0f,                       // xMax
                     yMax,                       // yMax
-                    0.9375f - biteSize/16.0f    // zMax (adjusted by bites)
+                    1.0f - biteSize/16.0f       // zMax (adjusted by bites)
             );
             case WEST -> VoxelShapes.cuboid(
-                    0.0625f + biteSize/16.0f,   // xMin (adjusted by bites)
+                    0.0f + biteSize/16.0f,      // xMin (adjusted by bites)
                     yMin,                       // yMin
-                    0.0625f,                    // zMin
-                    0.9375f,                    // xMax
+                    0.0f,                       // zMin
+                    1.0f,                       // xMax
                     yMax,                       // yMax
-                    0.9375f                     // zMax
+                    1.0f                        // zMax
             );
             case EAST -> VoxelShapes.cuboid(
-                    0.0625f,                    // xMin
+                    0.0f,                       // xMin
                     yMin,                       // yMin
-                    0.0625f,                    // zMin
-                    0.9375f - biteSize/16.0f,   // xMax (adjusted by bites)
+                    0.0f,                       // zMin
+                    1.0f - biteSize/16.0f,      // xMax (adjusted by bites)
                     yMax,                       // yMax
-                    0.9375f                     // zMax
+                    1.0f                        // zMax
             );
             default -> VoxelShapes.cuboid(
-                    0.0625f, yMin, 0.0625f,
-                    0.9375f, yMax, 0.9375f
+                    0.0f, yMin, 0.0f,
+                    1.0f, yMax, 1.0f
             );
         };
     }
@@ -114,17 +116,36 @@ public class CakeWoodBlock extends Block {
             }
             return ActionResult.CONSUME;
         }
-
         return eatCakeWood(world, pos, state, player, hit);
     }
 
     private ActionResult eatCakeWood(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockHitResult hit) {
-        if (!player.canConsume(true)) {  // Allow eating even when not hungry
+        if (!player.canConsume(true)) {
             return ActionResult.PASS;
         }
 
-        // Get which half was clicked
-        boolean isTopHalf = hit.getPos().y - pos.getY() >= 0.5;
+        Vec3d hitPos = hit.getPos().subtract(pos.getX(), pos.getY(), pos.getZ());
+        boolean isTopHalf = hitPos.y >= 0.5;
+
+        int topBites = state.get(TOP_BITES);
+        int bottomBites = state.get(BOTTOM_BITES);
+        Direction topFacing = state.get(TOP_FACING);
+        Direction bottomFacing = state.get(BOTTOM_FACING);
+
+        if (isTopHalf) {
+            if (!doesPointIntersectHalf(hitPos, topBites, true, topFacing)) {
+                if (doesPointIntersectHalf(hitPos, bottomBites, false, bottomFacing)) {
+                    isTopHalf = false;
+                } else {
+                    return ActionResult.PASS;
+                }
+            }
+        } else {
+            if (!doesPointIntersectHalf(hitPos, bottomBites, false, bottomFacing)) {
+                return ActionResult.PASS;
+            }
+        }
+
         IntProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
         DirectionProperty facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
         int bites = state.get(bitesProp);
@@ -133,20 +154,16 @@ public class CakeWoodBlock extends Block {
             return ActionResult.PASS;
         }
 
-        // Update facing based on player position for first bite
         Direction facing = bites == 0
-                ? Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 0.5f) & 3).getOpposite()
+                ? Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3)
                 : state.get(facingProp);
 
-        // Create new state with updated bites and facing
         BlockState newState = state.with(bitesProp, bites + 1)
                 .with(facingProp, facing);
 
-        // Apply the new state
         world.setBlockState(pos, newState,
                 Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
 
-        // Check if block should be removed
         if (newState.get(TOP_BITES) >= MAX_BITES &&
                 newState.get(BOTTOM_BITES) >= MAX_BITES) {
             world.removeBlock(pos, false);
@@ -155,7 +172,6 @@ public class CakeWoodBlock extends Block {
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
         }
 
-        // Apply effects
         player.getHungerManager().add(2, 0.1F);
         world.playSound(null, pos,
                 SoundEvents.ENTITY_GENERIC_EAT,
@@ -173,6 +189,28 @@ public class CakeWoodBlock extends Block {
         return ActionResult.SUCCESS;
     }
 
+    private boolean doesPointIntersectHalf(Vec3d point, int bites, boolean isTop, Direction facing) {
+        if (bites >= MAX_BITES) {
+            return false;
+        }
+
+        double yMin = isTop ? 0.5 : 0.0;
+        double yMax = isTop ? 1.0 : 0.5;
+
+        if (point.y < yMin || point.y > yMax) {
+            return false;
+        }
+
+        double biteDepth = bites * (2.0/16.0);
+        return switch (facing) {
+            case NORTH -> point.z >= biteDepth;
+            case SOUTH -> point.z <= (1.0 - biteDepth);
+            case WEST -> point.x >= biteDepth;
+            case EAST -> point.x <= (1.0 - biteDepth);
+            default -> true;
+        };
+    }
+
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return getDefaultState()
@@ -187,6 +225,6 @@ public class CakeWoodBlock extends Block {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return Math.max(7 - state.get(TOP_BITES), 7 - state.get(BOTTOM_BITES));
+        return Math.max(MAX_BITES - state.get(TOP_BITES), MAX_BITES - state.get(BOTTOM_BITES));
     }
 }
