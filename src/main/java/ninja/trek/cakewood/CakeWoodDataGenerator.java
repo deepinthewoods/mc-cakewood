@@ -1,7 +1,5 @@
 package ninja.trek.cakewood;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -10,7 +8,6 @@ import net.minecraft.data.client.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-
 import java.util.*;
 
 public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
@@ -40,7 +37,9 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     CakeWoodRegistry.getVariantBlock(variant);
 
             MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
-            TextureKey CAKE_TEXTURE = TextureKey.of("cake_texture");
+
+            // Define our texture key
+            TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
 
             for (int bites = 0; bites <= 7; bites++) {
                 final int bitesValue = bites;
@@ -48,25 +47,28 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     String modelName = String.format("block/%scake_wood_%s_%d",
                             prefix, isTop ? "top" : "bottom", bites);
 
+                    // Create model with base and texture reference
                     Model model = new Model(
                             Optional.of(Identifier.of(CakeWood.MOD_ID, "block/cake_wood_base")),
                             Optional.empty(),
-                            CAKE_TEXTURE
+                            WOOD_TEXTURE
                     );
 
+                    // Create the texture mapping
                     TextureMap textureMap = new TextureMap()
-                            .put(CAKE_TEXTURE, Identifier.of("minecraft", "block/" + textureName));
+                            .put(WOOD_TEXTURE, Identifier.of("minecraft", "block/" + textureName + "_planks"));
 
+                    // Upload the model with texture mapping
                     Identifier modelId = model.upload(
                             Identifier.of(CakeWood.MOD_ID, modelName),
                             textureMap,
-                            generator.modelCollector,
-                            (id, existingTextures) -> createBiteModelJson(bitesValue, isTop)
+                            generator.modelCollector
                     );
 
+                    // Add variants for each direction
                     for (Direction facing : Direction.Type.HORIZONTAL) {
                         When condition = When.create()
-                                .set(isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES, bites)
+                                .set(isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES, bitesValue)
                                 .set(isTop ? CakeWoodBlock.TOP_FACING : CakeWoodBlock.BOTTOM_FACING, facing);
 
                         stateSupplier.with(condition, BlockStateVariant.create()
@@ -77,68 +79,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     }
                 }
             }
-
             generator.blockStateCollector.accept(stateSupplier);
-        }
-
-        private JsonObject createBiteModelJson(int bites, boolean isTop) {
-            JsonObject modelData = new JsonObject();
-            modelData.addProperty("parent", "block/block");
-
-            JsonObject textures = new JsonObject();
-            textures.addProperty("particle", "#cake_texture");
-            textures.addProperty("cake_texture", "#cake_texture");
-            modelData.add("textures", textures);
-
-            JsonObject element = new JsonObject();
-            int biteDepth = bites * 2;
-            float yMin = isTop ? 8.0f : 0.0f;
-            float yMax = isTop ? 16.0f : 8.0f;
-
-            JsonArray from = new JsonArray();
-
-            from.add(1);
-            from.add( yMin);
-            from.add( 1 + biteDepth);
-
-            JsonArray to = new JsonArray();
-            to.add(15);
-            to.add(yMax);
-            to.add(15);
-
-            element.add("from", from);
-            element.add("to", to);
-
-            JsonObject faces = new JsonObject();
-            addFace(faces, "north", 1, yMin, 15, yMax);
-            addFace(faces, "east", 1 + biteDepth, yMin, 15, yMax);
-            addFace(faces, "south", 1, yMin, 15, yMax);
-            addFace(faces, "west", 1 + biteDepth, yMin, 15, yMax);
-            addFace(faces, "up", 1, 1 + biteDepth, 15, 15);
-            addFace(faces, "down", 1, 1 + biteDepth, 15, 15);
-
-            element.add("faces", faces);
-
-            JsonArray elements = new JsonArray();
-            elements.add(element);
-            modelData.add("elements", elements);
-
-            return modelData;
-        }
-
-        private void addFace(JsonObject faces, String face, float uMin, float vMin, float uMax, float vMax) {
-            JsonObject faceData = new JsonObject();
-
-            JsonArray uv = new JsonArray();
-
-            uv.add(uMin);
-            uv.add(vMin);
-            uv.add(uMax);
-            uv.add(vMax);
-
-            faceData.add("uv", uv);
-            faceData.addProperty("texture", "#cake_texture");
-            faces.add(face, faceData);
         }
 
         @Override
@@ -153,7 +94,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
             String textureName = variant.isEmpty() ? "oak" : variant;
             Models.GENERATED.upload(
                     ModelIds.getItemModelId(item),
-                    TextureMap.layer0(Identifier.of("minecraft", "block/" + textureName)),
+                    TextureMap.layer0(Identifier.of("minecraft", "block/" + textureName + "_planks")),
                     generator.writer
             );
         }

@@ -1,20 +1,20 @@
 {
   "parent": "block/block",
   "textures": {
-    "particle": "#cake_texture",
-    "cake_texture": "#cake_texture"
+    "particle": "#wood_texture",
+    "wood_texture": "#wood_texture"
   },
   "elements": [
     {
       "from": [1, 0, 1],
       "to": [15, 8, 15],
       "faces": {
-        "north": {"uv": [1, 8, 15, 16], "texture": "#cake_texture"},
-        "east": {"uv": [1, 8, 15, 16], "texture": "#cake_texture"},
-        "south": {"uv": [1, 8, 15, 16], "texture": "#cake_texture"},
-        "west": {"uv": [1, 8, 15, 16], "texture": "#cake_texture"},
-        "up": {"uv": [1, 1, 15, 15], "texture": "#cake_texture"},
-        "down": {"uv": [1, 1, 15, 15], "texture": "#cake_texture"}
+        "north": {"uv": [1, 8, 15, 16], "texture": "#wood_texture"},
+        "east": {"uv": [1, 8, 15, 16], "texture": "#wood_texture"},
+        "south": {"uv": [1, 8, 15, 16], "texture": "#wood_texture"},
+        "west": {"uv": [1, 8, 15, 16], "texture": "#wood_texture"},
+        "up": {"uv": [1, 1, 15, 15], "texture": "#wood_texture"},
+        "down": {"uv": [1, 1, 15, 15], "texture": "#wood_texture"}
       }
     }
   ]
