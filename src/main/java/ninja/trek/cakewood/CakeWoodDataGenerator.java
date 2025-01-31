@@ -1,5 +1,7 @@
 package ninja.trek.cakewood;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -8,7 +10,9 @@ import net.minecraft.data.client.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
     @Override
@@ -23,10 +27,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
         }
 
         @Override
-        public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-            generateCakeWoodVariant(blockStateModelGenerator, "", "oak");
+        public void generateBlockStateModels(BlockStateModelGenerator generator) {
+            generateCakeWoodVariant(generator, "", "oak");
             for (Map.Entry<String, CakeWoodBlock> entry : CakeWoodRegistry.getAllVariantBlocks().entrySet()) {
-                generateCakeWoodVariant(blockStateModelGenerator, entry.getKey(), entry.getKey());
+                generateCakeWoodVariant(generator, entry.getKey(), entry.getKey());
             }
         }
 
@@ -37,8 +41,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     CakeWoodRegistry.getVariantBlock(variant);
 
             MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
-
-            // Define our texture key
             TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
 
             for (int bites = 0; bites <= 7; bites++) {
@@ -47,18 +49,84 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     String modelName = String.format("block/%scake_wood_%s_%d",
                             prefix, isTop ? "top" : "bottom", bites);
 
-                    // Create model with base and texture reference
+                    // Create a custom model for this bite state
                     Model model = new Model(
-                            Optional.of(Identifier.of(CakeWood.MOD_ID, "block/cake_wood_base")),
+                            Optional.empty(),
                             Optional.empty(),
                             WOOD_TEXTURE
-                    );
+                    ) {
+                        @Override
+                        public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
+                            JsonObject json = new JsonObject();
+
+                            // Add textures
+                            JsonObject texturesJson = new JsonObject();
+                            textures.forEach((key, value) -> {
+                                texturesJson.addProperty(key.getName(), value.toString());
+                            });
+                            texturesJson.addProperty("particle", textures.get(WOOD_TEXTURE).toString());
+                            json.add("textures", texturesJson);
+
+                            // Calculate dimensions based on bites
+                            float biteSize = bitesValue * 2.0f; // Each bite is 2 pixels
+                            float depth = 14 - biteSize;    // Start at 14 pixels wide, subtract bite size
+                            int yOffset = isTop ? 8 : 0;
+                            int height = isTop ? 8 : 8;
+
+                            // Create elements array
+                            JsonArray elements = new JsonArray();
+                            JsonObject element = new JsonObject();
+
+                            // Set element coordinates
+                            JsonArray from = new JsonArray();
+                            from.add(1);  // x
+                            from.add(yOffset);  // y
+                            from.add(1);  // z
+                            element.add("from", from);
+
+                            JsonArray to = new JsonArray();
+                            to.add(15);  // x
+                            to.add(yOffset + height);  // y
+                            to.add(1 + depth);  // z
+                            element.add("to", to);
+
+                            // Add faces
+                            JsonObject faces = new JsonObject();
+                            String textureRef = "#" + WOOD_TEXTURE.getName();
+
+                            // Helper function to create face
+                            BiFunction<Integer, Integer, JsonObject> createFace = (startV, endV) -> {
+                                JsonObject face = new JsonObject();
+                                face.addProperty("texture", textureRef);
+                                JsonArray uv = new JsonArray();
+                                uv.add(1);  // u1
+                                uv.add(startV);  // v1
+                                uv.add(15);  // u2
+                                uv.add(endV);  // v2
+                                face.add("uv", uv);
+                                return face;
+                            };
+
+                            faces.add("north", createFace.apply(16-height, 16));
+                            faces.add("south", createFace.apply(16-height, 16));
+                            faces.add("east", createFace.apply(16-height, 16));
+                            faces.add("west", createFace.apply(16-height, 16));
+                            faces.add("up", createFace.apply(1, (int)depth));
+                            faces.add("down", createFace.apply(1, (int)depth));
+
+                            element.add("faces", faces);
+                            elements.add(element);
+                            json.add("elements", elements);
+
+                            return json;
+                        }
+                    };
 
                     // Create the texture mapping
                     TextureMap textureMap = new TextureMap()
                             .put(WOOD_TEXTURE, Identifier.of("minecraft", "block/" + textureName + "_planks"));
 
-                    // Upload the model with texture mapping
+                    // Upload the model
                     Identifier modelId = model.upload(
                             Identifier.of(CakeWood.MOD_ID, modelName),
                             textureMap,
