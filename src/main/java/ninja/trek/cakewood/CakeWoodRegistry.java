@@ -1,5 +1,4 @@
 package ninja.trek.cakewood;
-
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
@@ -9,47 +8,67 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.text.Text;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class CakeWoodRegistry {
-    // Base CakeWood block and item
-    public static final CakeWoodBlock CAKE_WOOD_BLOCK = new CakeWoodBlock(
-            FabricBlockSettings.create()
-                    .mapColor(MapColor.BROWN)
-                    .strength(0.5f)
-                    .sounds(BlockSoundGroup.WOOD)
-                    .nonOpaque()
-                    .pistonBehavior(PistonBehavior.DESTROY)
-                    .breakInstantly()
-    );
+    // Base CakeWood blocks and items
+    public static final CakeWoodBlock CAKE_WOOD_BLOCK = new CakeWoodBlock(createBlockSettings());
+    public static final CakeWoodBlock CAKE_WOOD_PLANKS_BLOCK = new CakeWoodBlock(createBlockSettings());
 
-    public static final BlockItem CAKE_WOOD_ITEM = new BlockItem(CAKE_WOOD_BLOCK,
-            new Item.Settings()) {
-        @Override
-        public Text getName() {
-            return Text.translatable("block.cakewood.cake_wood");
-        }
-    };
+    public static final BlockItem CAKE_WOOD_ITEM = createBlockItem(CAKE_WOOD_BLOCK, "block.cakewood.cake_wood");
+    public static final BlockItem CAKE_WOOD_PLANKS_ITEM = createBlockItem(CAKE_WOOD_PLANKS_BLOCK, "block.cakewood.cake_wood_planks");
 
+    // Maps to store variants
     private static final Map<String, CakeWoodBlock> CAKE_WOOD_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
+    private static final Map<String, CakeWoodBlock> CAKE_WOOD_PLANK_VARIANTS = new HashMap<>();
+    private static final Map<String, BlockItem> CAKE_WOOD_PLANK_VARIANT_ITEMS = new HashMap<>();
 
-    public static Map<String, CakeWoodBlock> getAllVariantBlocks() {
+    private static FabricBlockSettings createBlockSettings() {
+        return FabricBlockSettings.create()
+                .mapColor(MapColor.BROWN)
+                .strength(0.5f)
+                .sounds(BlockSoundGroup.WOOD)
+                .nonOpaque()
+                .pistonBehavior(PistonBehavior.DESTROY)
+                .breakInstantly();
+    }
+
+    private static BlockItem createBlockItem(CakeWoodBlock block, String translationKey) {
+        return new BlockItem(block, new Item.Settings()) {
+            @Override
+            public Text getName() {
+                return Text.translatable(translationKey);
+            }
+        };
+    }
+
+    // Getter methods for all variants
+    public static Map<String, CakeWoodBlock> getAllWoodVariantBlocks() {
         return CAKE_WOOD_VARIANTS;
     }
 
-    public static Map<String, BlockItem> getAllVariantItems() {
+    public static Map<String, BlockItem> getAllWoodVariantItems() {
         return CAKE_WOOD_VARIANT_ITEMS;
     }
 
+    public static Map<String, CakeWoodBlock> getAllPlankVariantBlocks() {
+        return CAKE_WOOD_PLANK_VARIANTS;
+    }
+
+    public static Map<String, BlockItem> getAllPlankVariantItems() {
+        return CAKE_WOOD_PLANK_VARIANT_ITEMS;
+    }
+
     public static void register() {
-        // Register base CakeWood
+        // Register base CakeWood and CakeWood Planks
         Registry.register(Registries.BLOCK, CakeWood.id("cake_wood"), CAKE_WOOD_BLOCK);
         Registry.register(Registries.ITEM, CakeWood.id("cake_wood"), CAKE_WOOD_ITEM);
+        Registry.register(Registries.BLOCK, CakeWood.id("cake_wood_planks"), CAKE_WOOD_PLANKS_BLOCK);
+        Registry.register(Registries.ITEM, CakeWood.id("cake_wood_planks"), CAKE_WOOD_PLANKS_ITEM);
 
-        // Register veneered variants
+        // Register all wood variants
         registerVariant("oak", "Oak-Veneered");
         registerVariant("spruce", "Spruce-Veneered");
         registerVariant("birch", "Birch-Veneered");
@@ -64,36 +83,43 @@ public class CakeWoodRegistry {
     }
 
     private static void registerVariant(String woodType, String displayName) {
-        CakeWoodBlock block = new CakeWoodBlock(
-                FabricBlockSettings.create()
-                        .mapColor(MapColor.BROWN)
-                        .strength(0.5f)
-                        .sounds(BlockSoundGroup.WOOD)
-                        .nonOpaque()
-                        .pistonBehavior(PistonBehavior.DESTROY)
-                        .breakInstantly()
-        );
+        // Create and register wood variant
+        CakeWoodBlock woodBlock = new CakeWoodBlock(createBlockSettings());
+        CakeWoodBlock plankBlock = new CakeWoodBlock(createBlockSettings());
 
-        final String finalDisplayName = displayName;
-        BlockItem blockItem = new BlockItem(block, new Item.Settings()) {
-            @Override
-            public Text getName() {
-                return Text.literal(finalDisplayName + " CakeWood");
-            }
-        };
+        String woodId = woodType + "_veneered_cake_wood";
+        String plankId = woodType + "_veneered_cake_wood_planks";
 
-        Registry.register(Registries.BLOCK, CakeWood.id(woodType + "_cake_wood"), block);
-        Registry.register(Registries.ITEM, CakeWood.id(woodType + "_cake_wood"), blockItem);
+        BlockItem woodItem = createBlockItem(woodBlock, "block.cakewood." + woodId);
+        BlockItem plankItem = createBlockItem(plankBlock, "block.cakewood." + plankId);
 
-        CAKE_WOOD_VARIANTS.put(woodType, block);
-        CAKE_WOOD_VARIANT_ITEMS.put(woodType, blockItem);
+        // Register blocks and items
+        Registry.register(Registries.BLOCK, CakeWood.id(woodId), woodBlock);
+        Registry.register(Registries.ITEM, CakeWood.id(woodId), woodItem);
+        Registry.register(Registries.BLOCK, CakeWood.id(plankId), plankBlock);
+        Registry.register(Registries.ITEM, CakeWood.id(plankId), plankItem);
+
+        // Store in maps
+        CAKE_WOOD_VARIANTS.put(woodType, woodBlock);
+        CAKE_WOOD_VARIANT_ITEMS.put(woodType, woodItem);
+        CAKE_WOOD_PLANK_VARIANTS.put(woodType, plankBlock);
+        CAKE_WOOD_PLANK_VARIANT_ITEMS.put(woodType, plankItem);
     }
 
-    public static CakeWoodBlock getVariantBlock(String woodType) {
+    // Getter methods for specific variants
+    public static CakeWoodBlock getWoodVariantBlock(String woodType) {
         return CAKE_WOOD_VARIANTS.get(woodType);
     }
 
-    public static BlockItem getVariantBlockItem(String woodType) {
+    public static BlockItem getWoodVariantItem(String woodType) {
         return CAKE_WOOD_VARIANT_ITEMS.get(woodType);
+    }
+
+    public static CakeWoodBlock getPlankVariantBlock(String woodType) {
+        return CAKE_WOOD_PLANK_VARIANTS.get(woodType);
+    }
+
+    public static BlockItem getPlankVariantItem(String woodType) {
+        return CAKE_WOOD_PLANK_VARIANT_ITEMS.get(woodType);
     }
 }
