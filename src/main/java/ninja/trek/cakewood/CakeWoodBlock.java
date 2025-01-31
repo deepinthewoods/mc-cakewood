@@ -9,7 +9,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -17,6 +16,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
 
@@ -28,23 +28,6 @@ public class CakeWoodBlock extends Block {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     public static final DirectionProperty BOTTOM_FACING = DirectionProperty.of("bottom_facing",
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
-    protected static final VoxelShape[] TOP_SHAPES = new VoxelShape[8];
-    protected static final VoxelShape[] BOTTOM_SHAPES = new VoxelShape[8];
-
-    static {
-        // Define shapes for top half
-        for (int i = 0; i < 8; i++) {
-            float height = 8.0f - i;
-            TOP_SHAPES[i] = VoxelShapes.cuboid(0.0625f, 0.5f, 0.0625f,
-                    0.9375f, 0.5f + (height/16.0f), 0.9375f);
-        }
-        // Define shapes for bottom half
-        for (int i = 0; i < 8; i++) {
-            float height = 8.0f - i;
-            BOTTOM_SHAPES[i] = VoxelShapes.cuboid(0.0625f, 0.0f, 0.0625f,
-                    0.9375f, height/16.0f, 0.9375f);
-        }
-    }
 
     public CakeWoodBlock(Settings settings) {
         super(settings);
@@ -62,76 +45,137 @@ public class CakeWoodBlock extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        VoxelShape topShape = TOP_SHAPES[state.get(TOP_BITES)];
-        VoxelShape bottomShape = BOTTOM_SHAPES[state.get(BOTTOM_BITES)];
-        return VoxelShapes.union(topShape, bottomShape);
+        int topBites = state.get(TOP_BITES);
+        int bottomBites = state.get(BOTTOM_BITES);
+        Direction topFacing = state.get(TOP_FACING);
+        Direction bottomFacing = state.get(BOTTOM_FACING);
+
+        return VoxelShapes.union(
+                getHalfShape(topBites, true, topFacing),
+                getHalfShape(bottomBites, false, bottomFacing)
+        );
     }
 
-    
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (world == null || player == null) {
-            return ActionResult.PASS;
+    private VoxelShape getHalfShape(int bites, boolean isTop, Direction facing) {
+        if (bites >= MAX_BITES) {
+            return VoxelShapes.empty();
         }
 
+        float biteSize = bites * 2.0f; // Each bite is 2 pixels deep
+        float yMin = isTop ? 0.5f : 0f;
+        float yMax = isTop ? 1.0f : 0.5f;
+
+        // Create the base shape based on the direction of bites
+        return switch (facing) {
+            case NORTH -> VoxelShapes.cuboid(
+                    0.0625f,                    // xMin (1/16)
+                    yMin,                       // yMin
+                    0.0625f + biteSize/16.0f,   // zMin (adjusted by bites)
+                    0.9375f,                    // xMax (15/16)
+                    yMax,                       // yMax
+                    0.9375f                     // zMax (15/16)
+            );
+            case SOUTH -> VoxelShapes.cuboid(
+                    0.0625f,                    // xMin
+                    yMin,                       // yMin
+                    0.0625f,                    // zMin
+                    0.9375f,                    // xMax
+                    yMax,                       // yMax
+                    0.9375f - biteSize/16.0f    // zMax (adjusted by bites)
+            );
+            case WEST -> VoxelShapes.cuboid(
+                    0.0625f + biteSize/16.0f,   // xMin (adjusted by bites)
+                    yMin,                       // yMin
+                    0.0625f,                    // zMin
+                    0.9375f,                    // xMax
+                    yMax,                       // yMax
+                    0.9375f                     // zMax
+            );
+            case EAST -> VoxelShapes.cuboid(
+                    0.0625f,                    // xMin
+                    yMin,                       // yMin
+                    0.0625f,                    // zMin
+                    0.9375f - biteSize/16.0f,   // xMax (adjusted by bites)
+                    yMax,                       // yMax
+                    0.9375f                     // zMax
+            );
+            default -> VoxelShapes.cuboid(
+                    0.0625f, yMin, 0.0625f,
+                    0.9375f, yMax, 0.9375f
+            );
+        };
+    }
+
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.isClient) {
-            if (tryEat(world, pos, state, player, hit).isAccepted()) {
+            if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
             return ActionResult.CONSUME;
         }
 
-        return tryEat(world, pos, state, player, hit);
+        return eatCakeWood(world, pos, state, player, hit);
     }
 
-    private ActionResult tryEat(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockHitResult hit) {
-        if (!player.canConsume(false)) {
+    private ActionResult eatCakeWood(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockHitResult hit) {
+        if (!player.canConsume(true)) {  // Allow eating even when not hungry
             return ActionResult.PASS;
         }
 
-        // Determine which layer was clicked
-        boolean isTopLayer = hit.getPos().y - pos.getY() >= 0.5;
-        int bites = isTopLayer ? state.get(TOP_BITES) : state.get(BOTTOM_BITES);
-        Direction facing = isTopLayer ? state.get(TOP_FACING) : state.get(BOTTOM_FACING);
+        // Get which half was clicked
+        boolean isTopHalf = hit.getPos().y - pos.getY() >= 0.5;
+        IntProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
+        DirectionProperty facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
+        int bites = state.get(bitesProp);
 
-        // Check if layer is fully eaten
         if (bites >= MAX_BITES) {
             return ActionResult.PASS;
         }
 
-        // Set initial facing based on player position if this is first bite
-        if (bites == 0) {
-            facing = Direction.fromHorizontal(
-                    (int)((player.getYaw() * 4.0f / 360.0f) + 0.5f) & 3
-            ).getOpposite();
-        }
+        // Update facing based on player position for first bite
+        Direction facing = bites == 0
+                ? Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 0.5f) & 3).getOpposite()
+                : state.get(facingProp);
 
-        // Update the block state
-        BlockState newState = state.with(
-                isTopLayer ? TOP_BITES : BOTTOM_BITES, bites + 1
-        ).with(
-                isTopLayer ? TOP_FACING : BOTTOM_FACING, facing
-        );
+        // Create new state with updated bites and facing
+        BlockState newState = state.with(bitesProp, bites + 1)
+                .with(facingProp, facing);
 
-        // Check if both layers are fully eaten
+        // Apply the new state
+        world.setBlockState(pos, newState,
+                Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
+
+        // Check if block should be removed
         if (newState.get(TOP_BITES) >= MAX_BITES &&
                 newState.get(BOTTOM_BITES) >= MAX_BITES) {
             world.removeBlock(pos, false);
+            world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         } else {
-            world.setBlockState(pos, newState, Block.NOTIFY_ALL);
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
         }
 
-        // Apply eating effects
+        // Apply effects
         player.getHungerManager().add(2, 0.1F);
-        world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EAT,
-                SoundCategory.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos,
+                SoundEvents.ENTITY_GENERIC_EAT,
+                SoundCategory.BLOCKS,
+                0.5f,
+                world.random.nextFloat() * 0.1f + 0.9f
+        );
+        world.playSound(null, pos,
+                SoundEvents.BLOCK_WOOD_BREAK,
+                SoundCategory.BLOCKS,
+                0.5f,
+                world.random.nextFloat() * 0.1f + 0.9f
+        );
 
         return ActionResult.SUCCESS;
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState()
+        return getDefaultState()
                 .with(TOP_FACING, ctx.getHorizontalPlayerFacing().getOpposite())
                 .with(BOTTOM_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
