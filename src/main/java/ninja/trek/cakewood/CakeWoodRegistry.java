@@ -1,8 +1,6 @@
 package ninja.trek.cakewood;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
@@ -10,6 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.Text;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +25,14 @@ public class CakeWoodRegistry {
                     .breakInstantly()
     );
 
-    public static final BlockItem CAKE_WOOD_ITEM = new BlockItem(CAKE_WOOD_BLOCK, new Item.Settings());
+    public static final BlockItem CAKE_WOOD_ITEM = new BlockItem(CAKE_WOOD_BLOCK,
+            new Item.Settings()) {
+        @Override
+        public Text getName() {
+            return Text.translatable("block.cakewood.cake_wood");
+        }
+    };
 
-    // Wood variants
     private static final Map<String, CakeWoodBlock> CAKE_WOOD_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
 
@@ -44,21 +49,21 @@ public class CakeWoodRegistry {
         Registry.register(Registries.BLOCK, CakeWood.id("cake_wood"), CAKE_WOOD_BLOCK);
         Registry.register(Registries.ITEM, CakeWood.id("cake_wood"), CAKE_WOOD_ITEM);
 
-        // Register vanilla wood variants
-        registerVariant("oak");
-        registerVariant("spruce");
-        registerVariant("birch");
-        registerVariant("jungle");
-        registerVariant("acacia");
-        registerVariant("dark_oak");
-        registerVariant("mangrove");
-        registerVariant("cherry");
-        registerVariant("bamboo");
-        registerVariant("crimson");
-        registerVariant("warped");
+        // Register veneered variants
+        registerVariant("oak", "Oak-Veneered");
+        registerVariant("spruce", "Spruce-Veneered");
+        registerVariant("birch", "Birch-Veneered");
+        registerVariant("jungle", "Jungle-Veneered");
+        registerVariant("acacia", "Acacia-Veneered");
+        registerVariant("dark_oak", "Dark Oak-Veneered");
+        registerVariant("mangrove", "Mangrove-Veneered");
+        registerVariant("cherry", "Cherry-Veneered");
+        registerVariant("bamboo", "Bamboo-Veneered");
+        registerVariant("crimson", "Crimson-Veneered");
+        registerVariant("warped", "Warped-Veneered");
     }
 
-    private static void registerVariant(String woodType) {
+    private static void registerVariant(String woodType, String displayName) {
         CakeWoodBlock block = new CakeWoodBlock(
                 FabricBlockSettings.create()
                         .mapColor(MapColor.BROWN)
@@ -69,7 +74,13 @@ public class CakeWoodRegistry {
                         .breakInstantly()
         );
 
-        BlockItem blockItem = new BlockItem(block, new Item.Settings());
+        final String finalDisplayName = displayName;
+        BlockItem blockItem = new BlockItem(block, new Item.Settings()) {
+            @Override
+            public Text getName() {
+                return Text.literal(finalDisplayName + " CakeWood");
+            }
+        };
 
         Registry.register(Registries.BLOCK, CakeWood.id(woodType + "_cake_wood"), block);
         Registry.register(Registries.ITEM, CakeWood.id(woodType + "_cake_wood"), blockItem);
@@ -85,6 +96,4 @@ public class CakeWoodRegistry {
     public static BlockItem getVariantBlockItem(String woodType) {
         return CAKE_WOOD_VARIANT_ITEMS.get(woodType);
     }
-
-
 }

@@ -70,7 +70,7 @@
     }
   ],
   "textures": {
-    "particle": "minecraft:block/oak_planks",
-    "wood_texture": "minecraft:block/oak_planks"
+    "particle": "cakewood:block/cake_wood",
+    "wood_texture": "cakewood:block/cake_wood"
   }
 }
