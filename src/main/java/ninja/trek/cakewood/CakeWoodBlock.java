@@ -51,11 +51,16 @@ public class CakeWoodBlock extends Block {
         Direction topFacing = state.get(TOP_FACING);
         Direction bottomFacing = state.get(BOTTOM_FACING);
 
-        VoxelShape topShape = topBites >= MAX_BITES ? VoxelShapes.empty() :
-                getHalfShape(topBites, true, topFacing);
-        VoxelShape bottomShape = bottomBites >= MAX_BITES ? VoxelShapes.empty() :
-                getHalfShape(bottomBites, false, bottomFacing);
+        VoxelShape topShape = topBites >= MAX_BITES ? null : getHalfShape(topBites, true, topFacing);
+        VoxelShape bottomShape = bottomBites >= MAX_BITES ? null : getHalfShape(bottomBites, false, bottomFacing);
 
+        if (topShape == null && bottomShape == null) {
+            return VoxelShapes.empty();
+        } else if (topShape == null) {
+            return bottomShape;
+        } else if (bottomShape == null) {
+            return topShape;
+        }
         return VoxelShapes.union(topShape, bottomShape);
     }
 

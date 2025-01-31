@@ -139,7 +139,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                           String textureId) {
             MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
             TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
-            for (int bites = 0; bites <= MAX_BITES; bites++) {
+            for (int bites = 0; bites < MAX_BITES; bites++) {
                 final int bitesValue = bites;
                 for (boolean isTop : Arrays.asList(true, false)) {
                     String modelName = String.format("block/%s_%s_%d",
