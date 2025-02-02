@@ -1,5 +1,7 @@
 package ninja.trek.cakewood;
+
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.BlockItem;
@@ -15,15 +17,26 @@ public class CakeWoodRegistry {
     // Base CakeWood blocks and items
     public static final CakeWoodBlock CAKE_WOOD_BLOCK = new CakeWoodBlock(createBlockSettings());
     public static final CakeWoodBlock CAKE_WOOD_PLANKS_BLOCK = new CakeWoodBlock(createBlockSettings());
-
     public static final BlockItem CAKE_WOOD_ITEM = createBlockItem(CAKE_WOOD_BLOCK, "block.cakewood.cake_wood");
     public static final BlockItem CAKE_WOOD_PLANKS_ITEM = createBlockItem(CAKE_WOOD_PLANKS_BLOCK, "block.cakewood.cake_wood_planks");
 
-    // Maps to store variants
+    // Base CornerCakeWood blocks and items
+    public static final CornerCakeWoodBlock CORNER_CAKE_WOOD_BLOCK = new CornerCakeWoodBlock(createBlockSettings());
+    public static final CornerCakeWoodBlock CORNER_CAKE_WOOD_PLANKS_BLOCK = new CornerCakeWoodBlock(createBlockSettings());
+    public static final BlockItem CORNER_CAKE_WOOD_ITEM = createBlockItem(CORNER_CAKE_WOOD_BLOCK, "block.cakewood.corner_cake_wood");
+    public static final BlockItem CORNER_CAKE_WOOD_PLANKS_ITEM = createBlockItem(CORNER_CAKE_WOOD_PLANKS_BLOCK, "block.cakewood.corner_cake_wood_planks");
+
+    // Maps to store variants for CakeWood
     private static final Map<String, CakeWoodBlock> CAKE_WOOD_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
     private static final Map<String, CakeWoodBlock> CAKE_WOOD_PLANK_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> CAKE_WOOD_PLANK_VARIANT_ITEMS = new HashMap<>();
+
+    // Maps to store variants for CornerCakeWood
+    private static final Map<String, CornerCakeWoodBlock> CORNER_CAKE_WOOD_VARIANTS = new HashMap<>();
+    private static final Map<String, BlockItem> CORNER_CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
+    private static final Map<String, CornerCakeWoodBlock> CORNER_CAKE_WOOD_PLANK_VARIANTS = new HashMap<>();
+    private static final Map<String, BlockItem> CORNER_CAKE_WOOD_PLANK_VARIANT_ITEMS = new HashMap<>();
 
     private static FabricBlockSettings createBlockSettings() {
         return FabricBlockSettings.create()
@@ -35,7 +48,7 @@ public class CakeWoodRegistry {
                 .breakInstantly();
     }
 
-    private static BlockItem createBlockItem(CakeWoodBlock block, String translationKey) {
+    private static BlockItem createBlockItem(Block block, String translationKey) {
         return new BlockItem(block, new Item.Settings()) {
             @Override
             public Text getName() {
@@ -44,7 +57,7 @@ public class CakeWoodRegistry {
         };
     }
 
-    // Getter methods for all variants
+    // Getter methods for CakeWood variants
     public static Map<String, CakeWoodBlock> getAllWoodVariantBlocks() {
         return CAKE_WOOD_VARIANTS;
     }
@@ -61,12 +74,35 @@ public class CakeWoodRegistry {
         return CAKE_WOOD_PLANK_VARIANT_ITEMS;
     }
 
+    // Getter methods for CornerCakeWood variants
+    public static Map<String, CornerCakeWoodBlock> getAllCornerWoodVariantBlocks() {
+        return CORNER_CAKE_WOOD_VARIANTS;
+    }
+
+    public static Map<String, BlockItem> getAllCornerWoodVariantItems() {
+        return CORNER_CAKE_WOOD_VARIANT_ITEMS;
+    }
+
+    public static Map<String, CornerCakeWoodBlock> getAllCornerPlankVariantBlocks() {
+        return CORNER_CAKE_WOOD_PLANK_VARIANTS;
+    }
+
+    public static Map<String, BlockItem> getAllCornerPlankVariantItems() {
+        return CORNER_CAKE_WOOD_PLANK_VARIANT_ITEMS;
+    }
+
     public static void register() {
         // Register base CakeWood and CakeWood Planks
         Registry.register(Registries.BLOCK, CakeWood.id("cake_wood"), CAKE_WOOD_BLOCK);
         Registry.register(Registries.ITEM, CakeWood.id("cake_wood"), CAKE_WOOD_ITEM);
         Registry.register(Registries.BLOCK, CakeWood.id("cake_wood_planks"), CAKE_WOOD_PLANKS_BLOCK);
         Registry.register(Registries.ITEM, CakeWood.id("cake_wood_planks"), CAKE_WOOD_PLANKS_ITEM);
+
+        // Register base CornerCakeWood and CornerCakeWood Planks
+        Registry.register(Registries.BLOCK, CakeWood.id("corner_cake_wood"), CORNER_CAKE_WOOD_BLOCK);
+        Registry.register(Registries.ITEM, CakeWood.id("corner_cake_wood"), CORNER_CAKE_WOOD_ITEM);
+        Registry.register(Registries.BLOCK, CakeWood.id("corner_cake_wood_planks"), CORNER_CAKE_WOOD_PLANKS_BLOCK);
+        Registry.register(Registries.ITEM, CakeWood.id("corner_cake_wood_planks"), CORNER_CAKE_WOOD_PLANKS_ITEM);
 
         // Register all wood variants
         registerVariant("oak", "Oak-Veneered");
@@ -83,27 +119,44 @@ public class CakeWoodRegistry {
     }
 
     private static void registerVariant(String woodType, String displayName) {
-        // Create and register wood variant
+        // Create and register CakeWood variant
         CakeWoodBlock woodBlock = new CakeWoodBlock(createBlockSettings());
         CakeWoodBlock plankBlock = new CakeWoodBlock(createBlockSettings());
-
         String woodId = woodType + "_veneered_cake_wood";
         String plankId = woodType + "_veneered_cake_wood_planks";
-
         BlockItem woodItem = createBlockItem(woodBlock, "block.cakewood." + woodId);
         BlockItem plankItem = createBlockItem(plankBlock, "block.cakewood." + plankId);
 
-        // Register blocks and items
+        // Create and register CornerCakeWood variant
+        CornerCakeWoodBlock cornerWoodBlock = new CornerCakeWoodBlock(createBlockSettings());
+        CornerCakeWoodBlock cornerPlankBlock = new CornerCakeWoodBlock(createBlockSettings());
+        String cornerWoodId = woodType + "_veneered_corner_cake_wood";
+        String cornerPlankId = woodType + "_veneered_corner_cake_wood_planks";
+        BlockItem cornerWoodItem = createBlockItem(cornerWoodBlock, "block.cakewood." + cornerWoodId);
+        BlockItem cornerPlankItem = createBlockItem(cornerPlankBlock, "block.cakewood." + cornerPlankId);
+
+        // Register CakeWood blocks and items
         Registry.register(Registries.BLOCK, CakeWood.id(woodId), woodBlock);
         Registry.register(Registries.ITEM, CakeWood.id(woodId), woodItem);
         Registry.register(Registries.BLOCK, CakeWood.id(plankId), plankBlock);
         Registry.register(Registries.ITEM, CakeWood.id(plankId), plankItem);
+
+        // Register CornerCakeWood blocks and items
+        Registry.register(Registries.BLOCK, CakeWood.id(cornerWoodId), cornerWoodBlock);
+        Registry.register(Registries.ITEM, CakeWood.id(cornerWoodId), cornerWoodItem);
+        Registry.register(Registries.BLOCK, CakeWood.id(cornerPlankId), cornerPlankBlock);
+        Registry.register(Registries.ITEM, CakeWood.id(cornerPlankId), cornerPlankItem);
 
         // Store in maps
         CAKE_WOOD_VARIANTS.put(woodType, woodBlock);
         CAKE_WOOD_VARIANT_ITEMS.put(woodType, woodItem);
         CAKE_WOOD_PLANK_VARIANTS.put(woodType, plankBlock);
         CAKE_WOOD_PLANK_VARIANT_ITEMS.put(woodType, plankItem);
+
+        CORNER_CAKE_WOOD_VARIANTS.put(woodType, cornerWoodBlock);
+        CORNER_CAKE_WOOD_VARIANT_ITEMS.put(woodType, cornerWoodItem);
+        CORNER_CAKE_WOOD_PLANK_VARIANTS.put(woodType, cornerPlankBlock);
+        CORNER_CAKE_WOOD_PLANK_VARIANT_ITEMS.put(woodType, cornerPlankItem);
     }
 
     // Getter methods for specific variants
@@ -121,5 +174,21 @@ public class CakeWoodRegistry {
 
     public static BlockItem getPlankVariantItem(String woodType) {
         return CAKE_WOOD_PLANK_VARIANT_ITEMS.get(woodType);
+    }
+
+    public static CornerCakeWoodBlock getCornerWoodVariantBlock(String woodType) {
+        return CORNER_CAKE_WOOD_VARIANTS.get(woodType);
+    }
+
+    public static BlockItem getCornerWoodVariantItem(String woodType) {
+        return CORNER_CAKE_WOOD_VARIANT_ITEMS.get(woodType);
+    }
+
+    public static CornerCakeWoodBlock getCornerPlankVariantBlock(String woodType) {
+        return CORNER_CAKE_WOOD_PLANK_VARIANTS.get(woodType);
+    }
+
+    public static BlockItem getCornerPlankVariantItem(String woodType) {
+        return CORNER_CAKE_WOOD_PLANK_VARIANT_ITEMS.get(woodType);
     }
 }

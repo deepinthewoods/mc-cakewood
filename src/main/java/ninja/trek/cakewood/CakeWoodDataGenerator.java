@@ -33,34 +33,113 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     CakeWoodRegistry.CAKE_WOOD_BLOCK,
                     "cake_wood",
                     "cake_wood");
-            // Generate base CakeWood Planks with custom texture
             generateVariantModel(generator,
                     CakeWoodRegistry.CAKE_WOOD_PLANKS_BLOCK,
                     "cake_wood_planks",
                     "cake_wood_planks_base");
+
+            // Generate base CornerCakeWood with custom texture
+            generateCornerVariantModel(generator,
+                    CakeWoodRegistry.CORNER_CAKE_WOOD_BLOCK,
+                    "corner_cake_wood",
+                    "cake_wood");
+            generateCornerVariantModel(generator,
+                    CakeWoodRegistry.CORNER_CAKE_WOOD_PLANKS_BLOCK,
+                    "corner_cake_wood_planks",
+                    "cake_wood_planks_base");
+
+            // Generate veneered corner variants with proper textures
+            for (Map.Entry<String, CornerCakeWoodBlock> entry : CakeWoodRegistry.getAllCornerWoodVariantBlocks().entrySet()) {
+                String woodType = entry.getKey();
+                String textureName = (woodType.equals("crimson") || woodType.equals("warped")) ?
+                        woodType + "_stem" :
+                        woodType + "_log";
+
+                // Corner CakeWood variants
+                generateCornerVariantModel(generator,
+                        entry.getValue(),
+                        woodType + "_veneered_corner_cake_wood",
+                        textureName);
+            }
+
+            // Generate plank corner variants
+            for (Map.Entry<String, CornerCakeWoodBlock> entry : CakeWoodRegistry.getAllCornerPlankVariantBlocks().entrySet()) {
+                String woodType = entry.getKey();
+                generateCornerVariantModel(generator,
+                        entry.getValue(),
+                        woodType + "_veneered_corner_cake_wood_planks",
+                        woodType + "_planks");
+            }
+
             // Generate veneered variants
             for (Map.Entry<String, CakeWoodBlock> entry : CakeWoodRegistry.getAllWoodVariantBlocks().entrySet()) {
                 String woodType = entry.getKey();
                 String textureName = (woodType.equals("crimson") || woodType.equals("warped")) ?
                         woodType + "_stem" :
                         woodType + "_log";
-                // Wood variant - use log/stem texture for all sides
+
+                // Regular CakeWood variants
                 generateVariantModel(generator,
                         entry.getValue(),
                         woodType + "_veneered_cake_wood",
                         textureName);
-                // Plank variant
-                CakeWoodBlock plankBlock = CakeWoodRegistry.getPlankVariantBlock(woodType);
                 generateVariantModel(generator,
-                        plankBlock,
+                        CakeWoodRegistry.getPlankVariantBlock(woodType),
                         woodType + "_veneered_cake_wood_planks",
+                        woodType + "_planks");
+
+
+            }
+        }
+
+        @Override
+        public void generateItemModels(ItemModelGenerator generator) {
+            // Base variants
+            generateItemModel(generator, CakeWoodRegistry.CAKE_WOOD_ITEM, "cake_wood");
+            generateItemModel(generator, CakeWoodRegistry.CAKE_WOOD_PLANKS_ITEM, "cake_wood_planks_base");
+            generateCornerItemModel(generator, CakeWoodRegistry.CORNER_CAKE_WOOD_ITEM, "cake_wood");
+            generateCornerItemModel(generator, CakeWoodRegistry.CORNER_CAKE_WOOD_PLANKS_ITEM, "cake_wood_planks_base");
+
+            // Wood variants
+            for (Map.Entry<String, BlockItem> entry : CakeWoodRegistry.getAllWoodVariantItems().entrySet()) {
+                String woodType = entry.getKey();
+                String woodTexture = (woodType.equals("crimson") || woodType.equals("warped")) ?
+                        woodType + "_stem" : woodType + "_log";
+
+                // Regular CakeWood items
+                generateItemModel(generator, entry.getValue(), woodTexture);
+                generateItemModel(generator,
+                        CakeWoodRegistry.getPlankVariantItem(woodType),
+                        woodType + "_planks");
+
+
+                // Corner CakeWood items
+                generateCornerItemModel(generator,
+                        CakeWoodRegistry.getCornerWoodVariantItem(woodType),
+                        woodTexture);
+                generateCornerItemModel(generator,
+                        CakeWoodRegistry.getCornerPlankVariantItem(woodType),
                         woodType + "_planks");
             }
         }
-        @Override
-        public void generateItemModels(ItemModelGenerator generator) {
-            // Custom model for items showing one bite
-            Model bittenModel = new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
+
+        private void generateItemModel(ItemModelGenerator generator, BlockItem item, String textureId) {
+            String textureRef = "minecraft:block/" + textureId;
+            if (textureId.startsWith("cake_wood")) {
+                textureRef = CakeWood.MOD_ID + ":block/" + textureId;
+            }
+            Model bittenModel = createBittenModel();
+            bittenModel.upload(
+                    ModelIds.getItemModelId(item),
+                    TextureMap.all(Identifier.of(
+                            textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
+                            "block/" + textureId)),
+                    generator.writer
+            );
+        }
+
+        private Model createBittenModel() {
+            return new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
                 @Override
                 public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                     JsonObject json = new JsonObject();
@@ -69,6 +148,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     texturesJson.addProperty("all", textures.get(TextureKey.ALL).toString());
                     texturesJson.addProperty("particle", textures.get(TextureKey.ALL).toString());
                     json.add("textures", texturesJson);
+
                     JsonArray elements = new JsonArray();
                     // Top half - with bite on south side
                     elements.add(createCuboid(1, 8, 1, 15, 16, 13));
@@ -77,6 +157,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     json.add("elements", elements);
                     return json;
                 }
+
                 private JsonObject createCuboid(int fromX, int fromY, int fromZ, int toX, int toY, int toZ) {
                     JsonObject element = new JsonObject();
                     JsonArray from = new JsonArray();
@@ -84,11 +165,13 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     from.add(fromY);
                     from.add(fromZ);
                     element.add("from", from);
+
                     JsonArray to = new JsonArray();
                     to.add(toX);
                     to.add(toY);
                     to.add(toZ);
                     element.add("to", to);
+
                     JsonObject faces = new JsonObject();
                     for (String face : new String[]{"north", "south", "east", "west", "up", "down"}) {
                         JsonObject faceObj = new JsonObject();
@@ -99,47 +182,17 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     return element;
                 }
             };
-            // Generate models for all variants using the bitten model
-            bittenModel.upload(
-                    ModelIds.getItemModelId(CakeWoodRegistry.CAKE_WOOD_ITEM),
-                    TextureMap.all(Identifier.of(CakeWood.MOD_ID, "block/cake_wood")),
-                    generator.writer
-            );
-            bittenModel.upload(
-                    ModelIds.getItemModelId(CakeWoodRegistry.CAKE_WOOD_PLANKS_ITEM),
-                    TextureMap.all(Identifier.of(CakeWood.MOD_ID, "block/cake_wood_planks_base")),
-                    generator.writer
-            );
-            for (Map.Entry<String, BlockItem> entry : CakeWoodRegistry.getAllWoodVariantItems().entrySet()) {
-                String woodType = entry.getKey();
-                String woodTexture = (woodType.equals("crimson") || woodType.equals("warped")) ?
-                        woodType + "_stem" : woodType + "_log";
-                bittenModel.upload(
-                        ModelIds.getItemModelId(entry.getValue()),
-                        TextureMap.all(Identifier.of("minecraft", "block/" + woodTexture)),
-                        generator.writer
-                );
-                bittenModel.upload(
-                        ModelIds.getItemModelId(CakeWoodRegistry.getPlankVariantItem(woodType)),
-                        TextureMap.all(Identifier.of("minecraft", "block/" + woodType + "_planks")),
-                        generator.writer
-                );
-            }
         }
-        private void generateItemModel(ItemModelGenerator generator, Model model, BlockItem item, Identifier texture) {
-            model.upload(
-                    ModelIds.getItemModelId(item),
-                    new TextureMap().put(TextureKey.of("wood_texture"), texture),
-                    generator.writer
-            );
-        }
+
         private void generateVariantModel(BlockStateModelGenerator generator,
                                           CakeWoodBlock block,
                                           String variantName,
                                           String textureId) {
+            LOGGER.info("var model " + variantName);
             MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
             TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
-            for (int bites = 0; bites < MAX_BITES; bites++) {
+
+            for (int bites = 0; bites < CakeWoodBlock.MAX_BITES; bites++) {
                 final int bitesValue = bites;
                 for (boolean isTop : Arrays.asList(true, false)) {
                     String modelName = String.format("block/%s_%s_%d",
@@ -163,46 +216,52 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             texturesJson.addProperty("wood_texture", textureRef);
                             texturesJson.addProperty("particle", textureRef);
                             json.add("textures", texturesJson);
+
                             float biteSize = bitesValue * (16.0f / CakeWoodBlock.MAX_BITES);
-                            float depth = 16 - biteSize;  // Changed from 14 to 16
+                            float depth = 16 - biteSize;
                             int yOffset = isTop ? 8 : 0;
                             int height = 8;
+
                             JsonArray elements = new JsonArray();
                             JsonObject element = new JsonObject();
                             JsonArray from = new JsonArray();
-                            from.add(0);  // Changed from 1
+                            from.add(0);
                             from.add(yOffset);
-                            from.add(0);  // Changed from 1
+                            from.add(0);
                             element.add("from", from);
+
                             JsonArray to = new JsonArray();
-                            to.add(16);  // Changed from 15
+                            to.add(16);
                             to.add(yOffset + height);
-                            to.add(depth);  // Now goes up to 16 - biteSize
+                            to.add(depth);
                             element.add("to", to);
+
                             JsonObject faces = new JsonObject();
                             BiFunction<Integer, Integer, JsonObject> createFace = (startV, endV) -> {
                                 JsonObject face = new JsonObject();
                                 face.addProperty("texture", "#wood_texture");
                                 JsonArray uv = new JsonArray();
-                                uv.add(0);   // Changed from 1
+                                uv.add(0);
                                 uv.add(startV);
-                                uv.add(16);  // Changed from 15
+                                uv.add(16);
                                 uv.add(endV);
                                 face.add("uv", uv);
                                 return face;
                             };
+
                             faces.add("north", createFace.apply(16-height, 16));
                             faces.add("south", createFace.apply(16-height, 16));
                             faces.add("east", createFace.apply(16-height, 16));
                             faces.add("west", createFace.apply(16-height, 16));
-                            faces.add("up", createFace.apply(0, (int)depth));    // Changed from 1
-                            faces.add("down", createFace.apply(0, (int)depth));  // Changed from 1
+                            faces.add("up", createFace.apply(0, (int)depth));
+                            faces.add("down", createFace.apply(0, (int)depth));
                             element.add("faces", faces);
                             elements.add(element);
                             json.add("elements", elements);
                             return json;
                         }
                     };
+
                     TextureMap textureMap = new TextureMap()
                             .put(WOOD_TEXTURE, Identifier.of(
                                     textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
@@ -212,10 +271,12 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             textureMap,
                             generator.modelCollector
                     );
+
                     for (Direction facing : Direction.Type.HORIZONTAL) {
                         When condition = When.create()
                                 .set(isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES, bitesValue)
                                 .set(isTop ? CakeWoodBlock.TOP_FACING : CakeWoodBlock.BOTTOM_FACING, facing);
+
                         stateSupplier.with(condition, BlockStateVariant.create()
                                 .put(VariantSettings.MODEL, modelId)
                                 .put(VariantSettings.Y, VariantSettings.Rotation.values()
@@ -226,5 +287,203 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
             }
             generator.blockStateCollector.accept(stateSupplier);
         }
+
+        private void generateCornerItemModel(ItemModelGenerator generator, BlockItem item, String textureId) {
+            String textureRef = "minecraft:block/" + textureId;
+            if (textureId.startsWith("cake_wood")) {
+                textureRef = CakeWood.MOD_ID + ":block/" + textureId;
+            }
+
+            Model cornerModel = new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
+                @Override
+                public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
+                    JsonObject json = new JsonObject();
+                    json.addProperty("parent", "minecraft:block/block");
+                    JsonObject texturesJson = new JsonObject();
+                    texturesJson.addProperty("all", textures.get(TextureKey.ALL).toString());
+                    texturesJson.addProperty("particle", textures.get(TextureKey.ALL).toString());
+                    json.add("textures", texturesJson);
+
+                    JsonArray elements = new JsonArray();
+                    // Add corner shape for top half (northwest corner)
+                    elements.add(createCornerElement(8, 16, 12));
+                    // Add corner shape for bottom half (northwest corner)
+                    elements.add(createCornerElement(0, 8, 12));
+                    json.add("elements", elements);
+                    return json;
+                }
+
+                private JsonObject createCornerElement(int yMin, int yMax, int size) {
+                    JsonObject element = new JsonObject();
+                    JsonArray from = new JsonArray();
+                    from.add(0);
+                    from.add(yMin);
+                    from.add(0);
+                    element.add("from", from);
+
+                    JsonArray to = new JsonArray();
+                    to.add(size);
+                    to.add(yMax);
+                    to.add(size);
+                    element.add("to", to);
+
+                    JsonObject faces = new JsonObject();
+                    String[] faceNames = {"north", "south", "east", "west", "up", "down"};
+                    for (String face : faceNames) {
+                        JsonObject faceObj = new JsonObject();
+                        faceObj.addProperty("texture", "#all");
+                        JsonArray uv = new JsonArray();
+                        switch (face) {
+                            case "up", "down" -> {
+                                uv.add(0);
+                                uv.add(0);
+                                uv.add(size);
+                                uv.add(size);
+                            }
+                            default -> {
+                                uv.add(0);
+                                uv.add(yMin);
+                                uv.add(size);
+                                uv.add(yMax);
+                            }
+                        }
+                        faceObj.add("uv", uv);
+                        faces.add(face, faceObj);
+                    }
+                    element.add("faces", faces);
+                    return element;
+                }
+            };
+
+            cornerModel.upload(
+                    ModelIds.getItemModelId(item),
+                    TextureMap.all(Identifier.of(
+                            textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
+                            "block/" + textureId)),
+                    generator.writer
+            );
+        }
+
+        // Update the generateCornerVariantModel method in CakeWoodDataGenerator.java
+
+        private void generateCornerVariantModel(BlockStateModelGenerator generator,
+                                                CornerCakeWoodBlock block,
+                                                String variantName,
+                                                String textureId) {
+            LOGGER.info("corner var " + variantName);
+            // Create a single MultipartBlockStateSupplier for the block
+            MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
+            TextureKey ALL = TextureKey.of("all");
+
+            // Generate models for all combinations of bites and directions
+            for (int bites = 0; bites < CornerCakeWoodBlock.MAX_BITES; bites++) {
+                final int bitesValue = bites;
+                for (boolean isTop : Arrays.asList(true, false)) {
+                    for (CornerCakeWoodBlock.DiagonalDirection facing : CornerCakeWoodBlock.DiagonalDirection.values()) {
+                        // Create a unique model name for each combination
+                        String modelName = String.format("block/%s_%s_%d_%s",
+                                variantName,
+                                isTop ? "top" : "bottom",
+                                bites,
+                                facing.asString());
+
+                        Model model = new Model(Optional.empty(), Optional.empty(), ALL) {
+                            @Override
+                            public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
+                                JsonObject json = new JsonObject();
+                                json.addProperty("parent", "minecraft:block/block");
+                                JsonObject texturesJson = new JsonObject();
+                                texturesJson.addProperty("particle", textures.get(ALL).toString());
+                                texturesJson.addProperty("texture", textures.get(ALL).toString());
+                                json.add("textures", texturesJson);
+
+                                float size = 16.0f - (bitesValue * (16.0f / CornerCakeWoodBlock.MAX_BITES));
+                                float yMin = isTop ? 8.0f : 0.0f;
+                                float yMax = isTop ? 16.0f : 8.0f;
+                                float xFrom, xTo, zFrom, zTo;
+
+                                switch (facing) {
+                                    case NORTHWEST:
+                                        xFrom = 0; xTo = size; zFrom = 0; zTo = size;
+                                        break;
+                                    case NORTHEAST:
+                                        xFrom = 16 - size; xTo = 16; zFrom = 0; zTo = size;
+                                        break;
+                                    case SOUTHEAST:
+                                        xFrom = 16 - size; xTo = 16; zFrom = 16 - size; zTo = 16;
+                                        break;
+                                    case SOUTHWEST:
+                                        xFrom = 0; xTo = size; zFrom = 16 - size; zTo = 16;
+                                        break;
+                                    default:
+                                        xFrom = 0; xTo = size; zFrom = 0; zTo = size;
+                                        break;
+                                }
+
+                                JsonArray elements = new JsonArray();
+                                JsonObject element = new JsonObject();
+                                JsonArray from = new JsonArray();
+                                from.add(xFrom);
+                                from.add(yMin);
+                                from.add(zFrom);
+                                element.add("from", from);
+
+                                JsonArray to = new JsonArray();
+                                to.add(xTo);
+                                to.add(yMax);
+                                to.add(zTo);
+                                element.add("to", to);
+
+                                JsonObject faces = new JsonObject();
+                                for (String face : new String[]{"north", "south", "east", "west", "up", "down"}) {
+                                    JsonObject faceObj = new JsonObject();
+                                    faceObj.addProperty("texture", "#texture");
+                                    JsonArray uv = new JsonArray();
+                                    if (face.equals("up") || face.equals("down")) {
+                                        uv.add(xFrom);
+                                        uv.add(zFrom);
+                                        uv.add(xTo);
+                                        uv.add(zTo);
+                                    } else {
+                                        uv.add(xFrom);
+                                        uv.add(yMin);
+                                        uv.add(xTo);
+                                        uv.add(yMax);
+                                    }
+                                    faceObj.add("uv", uv);
+                                    faces.add(face, faceObj);
+                                }
+                                element.add("faces", faces);
+                                elements.add(element);
+                                json.add("elements", elements);
+                                return json;
+                            }
+                        };
+
+                        TextureMap textureMap = new TextureMap().put(ALL, Identifier.of(
+                                textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
+                                "block/" + textureId));
+
+                        Identifier modelId = model.upload(
+                                Identifier.of(CakeWood.MOD_ID, modelName),
+                                textureMap,
+                                generator.modelCollector
+                        );
+
+                        // Add this variant to the MultipartBlockStateSupplier
+                        When condition = When.create()
+                                .set(isTop ? CornerCakeWoodBlock.TOP_BITES : CornerCakeWoodBlock.BOTTOM_BITES, bitesValue)
+                                .set(isTop ? CornerCakeWoodBlock.TOP_FACING : CornerCakeWoodBlock.BOTTOM_FACING, facing);
+
+                        stateSupplier.with(condition, BlockStateVariant.create()
+                                .put(VariantSettings.MODEL, modelId));
+                    }
+                }
+            }
+
+            // Register the blockstate once with all variants
+            generator.blockStateCollector.accept(stateSupplier);
+        }
+
     }
 }
