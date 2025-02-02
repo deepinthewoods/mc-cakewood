@@ -293,7 +293,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
             if (textureId.startsWith("cake_wood")) {
                 textureRef = CakeWood.MOD_ID + ":block/" + textureId;
             }
-
             Model cornerModel = new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
                 @Override
                 public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
@@ -305,45 +304,60 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     json.add("textures", texturesJson);
 
                     JsonArray elements = new JsonArray();
-                    // Add corner shape for top half (northwest corner)
-                    elements.add(createCornerElement(8, 16, 12));
-                    // Add corner shape for bottom half (northwest corner)
-                    elements.add(createCornerElement(0, 8, 12));
+
+                    // Bottom half - full size southwest corner
+                    elements.add(createCornerElement(0, 8, true));
+
+                    // Top half - half size southwest corner (showing 4 bites taken)
+                    elements.add(createCornerElement(8, 16, false));
+
                     json.add("elements", elements);
                     return json;
                 }
 
-                private JsonObject createCornerElement(int yMin, int yMax, int size) {
+                private JsonObject createCornerElement(int yMin, int yMax, boolean isFullSize) {
                     JsonObject element = new JsonObject();
+                    int size = isFullSize ? 16 : 8; // 16 for bottom, 8 for bitten top
+
+                    // For southwest corner, we want to start at x=0, but end at maxZ
                     JsonArray from = new JsonArray();
-                    from.add(0);
-                    from.add(yMin);
-                    from.add(0);
+                    from.add(0);                    // x starts at 0
+                    from.add(yMin);                 // y
+                    from.add(16 - size);            // z starts offset from back for the given size
                     element.add("from", from);
 
                     JsonArray to = new JsonArray();
-                    to.add(size);
-                    to.add(yMax);
-                    to.add(size);
+                    to.add(size);                   // x extends by size
+                    to.add(yMax);                   // y
+                    to.add(16);                     // z goes to full depth
                     element.add("to", to);
 
+                    // Add faces with proper UV mapping
                     JsonObject faces = new JsonObject();
                     String[] faceNames = {"north", "south", "east", "west", "up", "down"};
+
                     for (String face : faceNames) {
                         JsonObject faceObj = new JsonObject();
                         faceObj.addProperty("texture", "#all");
+
                         JsonArray uv = new JsonArray();
                         switch (face) {
                             case "up", "down" -> {
                                 uv.add(0);
-                                uv.add(0);
+                                uv.add(16 - size);
                                 uv.add(size);
-                                uv.add(size);
+                                uv.add(16);
                             }
-                            default -> {
+                            case "north", "south" -> {
                                 uv.add(0);
                                 uv.add(yMin);
                                 uv.add(size);
+                                uv.add(yMax);
+                            }
+                            case "east", "west" -> {
+                                uv.add(16 - size);
+                                uv.add(yMin);
+                                uv.add(16);
                                 uv.add(yMax);
                             }
                         }
