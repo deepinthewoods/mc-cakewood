@@ -188,7 +188,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                           CakeWoodBlock block,
                                           String variantName,
                                           String textureId) {
-            LOGGER.info("var model " + variantName);
             MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
             TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
 
@@ -199,6 +198,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             variantName,
                             isTop ? "top" : "bottom",
                             bites);
+
                     Model model = new Model(
                             Optional.of(Identifier.of(CakeWood.MOD_ID, "block/cake_wood_template")),
                             Optional.empty(),
@@ -208,6 +208,8 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                         public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                             JsonObject json = new JsonObject();
                             json.addProperty("parent", "minecraft:block/block");
+
+                            // Set up textures
                             JsonObject texturesJson = new JsonObject();
                             String textureRef = "minecraft:block/" + textureId;
                             if (textureId.startsWith("cake_wood")) {
@@ -217,6 +219,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             texturesJson.addProperty("particle", textureRef);
                             json.add("textures", texturesJson);
 
+                            // Calculate dimensions
                             float biteSize = bitesValue * (16.0f / CakeWoodBlock.MAX_BITES);
                             float depth = 16 - biteSize;
                             int yOffset = isTop ? 8 : 0;
@@ -224,6 +227,8 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
 
                             JsonArray elements = new JsonArray();
                             JsonObject element = new JsonObject();
+
+                            // Set block dimensions
                             JsonArray from = new JsonArray();
                             from.add(0);
                             from.add(yOffset);
@@ -236,42 +241,96 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             to.add(depth);
                             element.add("to", to);
 
+                            // Create faces with proper UV mapping
                             JsonObject faces = new JsonObject();
-                            BiFunction<Integer, Integer, JsonObject> createFace = (startV, endV) -> {
-                                JsonObject face = new JsonObject();
-                                face.addProperty("texture", "#wood_texture");
-                                JsonArray uv = new JsonArray();
-                                uv.add(0);
-                                uv.add(startV);
-                                uv.add(16);
-                                uv.add(endV);
-                                face.add("uv", uv);
-                                return face;
-                            };
 
-                            faces.add("north", createFace.apply(16-height, 16));
-                            faces.add("south", createFace.apply(16-height, 16));
-                            faces.add("east", createFace.apply(16-height, 16));
-                            faces.add("west", createFace.apply(16-height, 16));
-                            faces.add("up", createFace.apply(0, (int)depth));
-                            faces.add("down", createFace.apply(0, (int)depth));
+                            // North face (full texture)
+                            JsonObject northFace = new JsonObject();
+                            northFace.addProperty("texture", "#wood_texture");
+                            JsonArray northUV = new JsonArray();
+                            northUV.add(0);  // u1
+                            northUV.add(16 - height);  // v1 - offset for half height
+                            northUV.add(16); // u2
+                            northUV.add(16); // v2
+                            northFace.add("uv", northUV);
+                            faces.add("north", northFace);
+
+                            // South face (full texture, adjusted for bites)
+                            JsonObject southFace = new JsonObject();
+                            southFace.addProperty("texture", "#wood_texture");
+                            JsonArray southUV = new JsonArray();
+                            southUV.add(0);   // u1
+                            southUV.add(16 - height);  // v1
+                            southUV.add(16);  // u2
+                            southUV.add(16);  // v2
+                            southFace.add("uv", southUV);
+                            faces.add("south", southFace);
+
+                            // East face
+                            JsonObject eastFace = new JsonObject();
+                            eastFace.addProperty("texture", "#wood_texture");
+                            JsonArray eastUV = new JsonArray();
+                            eastUV.add(0);    // u1
+                            eastUV.add(16 - height);   // v1
+                            eastUV.add(depth); // u2 - adjusted for bites
+                            eastUV.add(16);   // v2
+                            eastFace.add("uv", eastUV);
+                            faces.add("east", eastFace);
+
+                            // West face
+                            JsonObject westFace = new JsonObject();
+                            westFace.addProperty("texture", "#wood_texture");
+                            JsonArray westUV = new JsonArray();
+                            westUV.add(0);    // u1
+                            westUV.add(16 - height);   // v1
+                            westUV.add(depth); // u2 - adjusted for bites
+                            westUV.add(16);   // v2
+                            westFace.add("uv", westUV);
+                            faces.add("west", westFace);
+
+                            // Top face
+                            JsonObject topFace = new JsonObject();
+                            topFace.addProperty("texture", "#wood_texture");
+                            JsonArray topUV = new JsonArray();
+                            topUV.add(0);     // u1
+                            topUV.add(0);     // v1
+                            topUV.add(16);    // u2
+                            topUV.add(depth); // v2 - adjusted for bites
+                            topFace.add("uv", topUV);
+                            faces.add("up", topFace);
+
+                            // Bottom face
+                            JsonObject bottomFace = new JsonObject();
+                            bottomFace.addProperty("texture", "#wood_texture");
+                            JsonArray bottomUV = new JsonArray();
+                            bottomUV.add(0);     // u1
+                            bottomUV.add(0);     // v1
+                            bottomUV.add(16);    // u2
+                            bottomUV.add(depth); // v2 - adjusted for bites
+                            bottomFace.add("uv", bottomUV);
+                            faces.add("down", bottomFace);
+
                             element.add("faces", faces);
                             elements.add(element);
                             json.add("elements", elements);
+
                             return json;
                         }
                     };
 
+                    // Register the model and its variants
                     TextureMap textureMap = new TextureMap()
                             .put(WOOD_TEXTURE, Identifier.of(
                                     textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                                     "block/" + textureId));
+
                     Identifier modelId = model.upload(
                             Identifier.of(CakeWood.MOD_ID, modelName),
                             textureMap,
                             generator.modelCollector
                     );
 
+                    // Create variants for each direction
                     for (Direction facing : Direction.Type.HORIZONTAL) {
                         When condition = When.create()
                                 .set(isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES, bitesValue)
@@ -285,6 +344,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     }
                 }
             }
+
             generator.blockStateCollector.accept(stateSupplier);
         }
 
