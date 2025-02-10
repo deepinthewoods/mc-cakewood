@@ -4,11 +4,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -29,6 +34,7 @@ public class CakeWoodBlock extends Block {
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     public static final DirectionProperty BOTTOM_FACING = DirectionProperty.of("bottom_facing",
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+    public static final BooleanProperty WAXED = BooleanProperty.of("waxed");
 
     public CakeWoodBlock(Settings settings) {
         super(settings);
@@ -36,12 +42,13 @@ public class CakeWoodBlock extends Block {
                 .with(TOP_BITES, 0)
                 .with(BOTTOM_BITES, 0)
                 .with(TOP_FACING, Direction.NORTH)
-                .with(BOTTOM_FACING, Direction.NORTH));
+                .with(BOTTOM_FACING, Direction.NORTH)
+                .with(WAXED, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(TOP_BITES, BOTTOM_BITES, TOP_FACING, BOTTOM_FACING);
+        builder.add(TOP_BITES, BOTTOM_BITES, TOP_FACING, BOTTOM_FACING, WAXED);
     }
 
     @Override
@@ -115,6 +122,37 @@ public class CakeWoodBlock extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+        ItemStack stack = player.getStackInHand(player.preferredHand);
+
+        // Handle waxing with honeycomb
+        if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
+            if (!world.isClient) {
+                world.setBlockState(pos, state.with(WAXED, true));
+                world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                if (!player.isCreative()) {
+                    stack.decrement(1);
+                }
+            }
+            return ActionResult.success(world.isClient);
+        }
+
+        // Handle unwaxing with axe
+        if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
+            if (!world.isClient) {
+                world.setBlockState(pos, state.with(WAXED, false));
+                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                stack.setDamage(stack.getDamage() + 1);
+                player.swingHand(player.preferredHand);
+            }
+            return ActionResult.success(world.isClient);
+        }
+
+        // If waxed, prevent eating
+        if (state.get(WAXED)) {
+            return ActionResult.PASS;
+        }
+
+        // Original eating logic
         if (world.isClient) {
             if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
