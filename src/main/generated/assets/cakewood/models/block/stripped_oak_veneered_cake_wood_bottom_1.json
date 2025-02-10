@@ -1,0 +1,79 @@
+{
+  "parent": "minecraft:block/block",
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#wood_texture",
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#wood_texture",
+          "uv": [
+            2,
+            0,
+            16,
+            8
+          ]
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#wood_texture",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#wood_texture",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#wood_texture",
+          "uv": [
+            0,
+            0,
+            16,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#wood_texture",
+          "uv": [
+            0,
+            0,
+            14,
+            8
+          ]
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        8,
+        14
+      ]
+    }
+  ],
+  "textures": {
+    "particle": "minecraft:block/stripped_oak_log",
+    "wood_texture": "minecraft:block/stripped_oak_log"
+  }
+}

@@ -1,0 +1,580 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_0_northwest"
+      },
+      "when": {
+        "top_bites": "0",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_0_northeast"
+      },
+      "when": {
+        "top_bites": "0",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_0_southwest"
+      },
+      "when": {
+        "top_bites": "0",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_0_southeast"
+      },
+      "when": {
+        "top_bites": "0",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_0_northwest"
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_0_northeast"
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_0_southwest"
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_0_southeast"
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_1_northwest"
+      },
+      "when": {
+        "top_bites": "1",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_1_northeast"
+      },
+      "when": {
+        "top_bites": "1",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_1_southwest"
+      },
+      "when": {
+        "top_bites": "1",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_1_southeast"
+      },
+      "when": {
+        "top_bites": "1",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_1_northwest"
+      },
+      "when": {
+        "bottom_bites": "1",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_1_northeast"
+      },
+      "when": {
+        "bottom_bites": "1",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_1_southwest"
+      },
+      "when": {
+        "bottom_bites": "1",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_1_southeast"
+      },
+      "when": {
+        "bottom_bites": "1",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_2_northwest"
+      },
+      "when": {
+        "top_bites": "2",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_2_northeast"
+      },
+      "when": {
+        "top_bites": "2",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_2_southwest"
+      },
+      "when": {
+        "top_bites": "2",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_2_southeast"
+      },
+      "when": {
+        "top_bites": "2",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_2_northwest"
+      },
+      "when": {
+        "bottom_bites": "2",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_2_northeast"
+      },
+      "when": {
+        "bottom_bites": "2",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_2_southwest"
+      },
+      "when": {
+        "bottom_bites": "2",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_2_southeast"
+      },
+      "when": {
+        "bottom_bites": "2",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_3_northwest"
+      },
+      "when": {
+        "top_bites": "3",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_3_northeast"
+      },
+      "when": {
+        "top_bites": "3",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_3_southwest"
+      },
+      "when": {
+        "top_bites": "3",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_3_southeast"
+      },
+      "when": {
+        "top_bites": "3",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_3_northwest"
+      },
+      "when": {
+        "bottom_bites": "3",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_3_northeast"
+      },
+      "when": {
+        "bottom_bites": "3",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_3_southwest"
+      },
+      "when": {
+        "bottom_bites": "3",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_3_southeast"
+      },
+      "when": {
+        "bottom_bites": "3",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_4_northwest"
+      },
+      "when": {
+        "top_bites": "4",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_4_northeast"
+      },
+      "when": {
+        "top_bites": "4",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_4_southwest"
+      },
+      "when": {
+        "top_bites": "4",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_4_southeast"
+      },
+      "when": {
+        "top_bites": "4",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_4_northwest"
+      },
+      "when": {
+        "bottom_bites": "4",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_4_northeast"
+      },
+      "when": {
+        "bottom_bites": "4",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_4_southwest"
+      },
+      "when": {
+        "bottom_bites": "4",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_4_southeast"
+      },
+      "when": {
+        "bottom_bites": "4",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_5_northwest"
+      },
+      "when": {
+        "top_bites": "5",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_5_northeast"
+      },
+      "when": {
+        "top_bites": "5",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_5_southwest"
+      },
+      "when": {
+        "top_bites": "5",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_5_southeast"
+      },
+      "when": {
+        "top_bites": "5",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_5_northwest"
+      },
+      "when": {
+        "bottom_bites": "5",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_5_northeast"
+      },
+      "when": {
+        "bottom_bites": "5",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_5_southwest"
+      },
+      "when": {
+        "bottom_bites": "5",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_5_southeast"
+      },
+      "when": {
+        "bottom_bites": "5",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_6_northwest"
+      },
+      "when": {
+        "top_bites": "6",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_6_northeast"
+      },
+      "when": {
+        "top_bites": "6",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_6_southwest"
+      },
+      "when": {
+        "top_bites": "6",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_6_southeast"
+      },
+      "when": {
+        "top_bites": "6",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_6_northwest"
+      },
+      "when": {
+        "bottom_bites": "6",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_6_northeast"
+      },
+      "when": {
+        "bottom_bites": "6",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_6_southwest"
+      },
+      "when": {
+        "bottom_bites": "6",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_6_southeast"
+      },
+      "when": {
+        "bottom_bites": "6",
+        "bottom_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_7_northwest"
+      },
+      "when": {
+        "top_bites": "7",
+        "top_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_7_northeast"
+      },
+      "when": {
+        "top_bites": "7",
+        "top_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_7_southwest"
+      },
+      "when": {
+        "top_bites": "7",
+        "top_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_top_7_southeast"
+      },
+      "when": {
+        "top_bites": "7",
+        "top_facing": "southeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_7_northwest"
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "northwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_7_northeast"
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "northeast"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_7_southwest"
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "southwest"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/stripped_corner_cake_wood_bottom_7_southeast"
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "southeast"
+      }
+    }
+  ]
+}

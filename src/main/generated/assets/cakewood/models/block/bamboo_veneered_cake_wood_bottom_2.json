@@ -4,39 +4,41 @@
     {
       "faces": {
         "down": {
+          "cullface": "down",
           "texture": "#wood_texture",
           "uv": [
             0,
             0,
             16,
-            12.0
+            12
           ]
         },
         "east": {
           "texture": "#wood_texture",
           "uv": [
+            4,
             0,
-            8,
-            12.0,
-            16
+            16,
+            8
           ]
         },
         "north": {
+          "cullface": "north",
           "texture": "#wood_texture",
           "uv": [
             0,
-            8,
+            0,
             16,
-            16
+            8
           ]
         },
         "south": {
           "texture": "#wood_texture",
           "uv": [
             0,
-            8,
+            0,
             16,
-            16
+            8
           ]
         },
         "up": {
@@ -45,16 +47,16 @@
             0,
             0,
             16,
-            12.0
+            12
           ]
         },
         "west": {
           "texture": "#wood_texture",
           "uv": [
             0,
-            8,
-            12.0,
-            16
+            0,
+            12,
+            8
           ]
         }
       },
@@ -66,12 +68,12 @@
       "to": [
         16,
         8,
-        12.0
+        12
       ]
     }
   ],
   "textures": {
-    "particle": "minecraft:block/bamboo_log",
-    "wood_texture": "minecraft:block/bamboo_log"
+    "particle": "minecraft:block/bamboo_block",
+    "wood_texture": "minecraft:block/bamboo_block"
   }
 }

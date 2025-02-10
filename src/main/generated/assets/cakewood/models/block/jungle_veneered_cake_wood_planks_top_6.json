@@ -9,19 +9,20 @@
             0,
             0,
             16,
-            4.0
+            4
           ]
         },
         "east": {
           "texture": "#wood_texture",
           "uv": [
-            0,
+            12,
             8,
-            4.0,
+            16,
             16
           ]
         },
         "north": {
+          "cullface": "north",
           "texture": "#wood_texture",
           "uv": [
             0,
@@ -40,12 +41,13 @@
           ]
         },
         "up": {
+          "cullface": "up",
           "texture": "#wood_texture",
           "uv": [
             0,
             0,
             16,
-            4.0
+            4
           ]
         },
         "west": {
@@ -53,7 +55,7 @@
           "uv": [
             0,
             8,
-            4.0,
+            4,
             16
           ]
         }
@@ -66,7 +68,7 @@
       "to": [
         16,
         16,
-        4.0
+        4
       ]
     }
   ],

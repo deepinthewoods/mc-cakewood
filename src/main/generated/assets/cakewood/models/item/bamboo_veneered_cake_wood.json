@@ -67,7 +67,7 @@
     }
   ],
   "textures": {
-    "all": "minecraft:block/bamboo_log",
-    "particle": "minecraft:block/bamboo_log"
+    "all": "minecraft:block/bamboo_block",
+    "particle": "minecraft:block/bamboo_block"
   }
 }

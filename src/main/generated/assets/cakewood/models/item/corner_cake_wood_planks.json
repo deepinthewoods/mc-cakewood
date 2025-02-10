@@ -139,7 +139,7 @@
     }
   ],
   "textures": {
-    "all": "cakewood:block/cake_wood_planks_base",
-    "particle": "cakewood:block/cake_wood_planks_base"
+    "all": "cakewood:block/cake_wood_planks",
+    "particle": "cakewood:block/cake_wood_planks"
   }
 }

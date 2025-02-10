@@ -9,7 +9,7 @@
             0,
             0,
             16,
-            16.0
+            16
           ]
         },
         "east": {
@@ -17,11 +17,12 @@
           "uv": [
             0,
             8,
-            16.0,
+            16,
             16
           ]
         },
         "north": {
+          "cullface": "north",
           "texture": "#wood_texture",
           "uv": [
             0,
@@ -40,12 +41,13 @@
           ]
         },
         "up": {
+          "cullface": "up",
           "texture": "#wood_texture",
           "uv": [
             0,
             0,
             16,
-            16.0
+            16
           ]
         },
         "west": {
@@ -53,7 +55,7 @@
           "uv": [
             0,
             8,
-            16.0,
+            16,
             16
           ]
         }
@@ -66,12 +68,12 @@
       "to": [
         16,
         16,
-        16.0
+        16
       ]
     }
   ],
   "textures": {
-    "particle": "cakewood:block/cake_wood_planks_base",
-    "wood_texture": "cakewood:block/cake_wood_planks_base"
+    "particle": "cakewood:block/cake_wood_planks",
+    "wood_texture": "cakewood:block/cake_wood_planks"
   }
 }
