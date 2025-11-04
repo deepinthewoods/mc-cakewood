@@ -238,7 +238,66 @@ import net.minecraft.client.data.*;
 
 **Note**: The `build.gradle` file already has `client = true` configured in the `fabricApi.configureDataGeneration` block, which is required for these changes to work.
 
-#### Step 2.3: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
+#### Step 2.2a: Move Data Generator to Client Source Set (CRITICAL for splitEnvironmentSourceSets)
+
+**⚠️ CRITICAL**: If your `build.gradle` has `splitEnvironmentSourceSets()` enabled AND you're using client data generation, your `DataGeneratorEntrypoint` implementation **MUST** be in the client source set.
+
+**File to move**: `src/main/java/ninja/trek/cakewood/CakeWoodDataGenerator.java`
+
+**Move to**: `src/client/java/ninja/trek/cakewood/CakeWoodDataGenerator.java`
+
+**Command**:
+```bash
+git mv src/main/java/ninja/trek/cakewood/CakeWoodDataGenerator.java \
+        src/client/java/ninja/trek/cakewood/CakeWoodDataGenerator.java
+```
+
+**Why**: With `splitEnvironmentSourceSets()` enabled, the main source set doesn't have access to client-only packages like `net.fabricmc.fabric.api.client.datagen.v1.provider`. Moving the data generator to the client source set gives it access to these packages at compile time.
+
+**Symptoms if not done**:
+- `package net.fabricmc.fabric.api.client.datagen.v1.provider does not exist`
+- `package net.minecraft.client.data does not exist`
+- All data generation classes fail to compile
+
+#### Step 2.3: Replace DirectionProperty with EnumProperty (1.21.10 Breaking Change)
+
+**⚠️ BREAKING CHANGE**: In Minecraft 1.21.10, the `DirectionProperty` class was removed from Yarn mappings.
+
+**File**: `src/main/java/ninja/trek/cakewood/CakeWoodBlock.java` (and any other files using DirectionProperty)
+
+**Current code:**
+```java
+import net.minecraft.state.property.DirectionProperty;
+
+public static final DirectionProperty TOP_FACING = DirectionProperty.of("top_facing",
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+public static final DirectionProperty BOTTOM_FACING = DirectionProperty.of("bottom_facing",
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+```
+
+**Updated code:**
+```java
+import net.minecraft.state.property.EnumProperty;
+
+public static final EnumProperty<Direction> TOP_FACING = EnumProperty.of("top_facing", Direction.class,
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+public static final EnumProperty<Direction> BOTTOM_FACING = EnumProperty.of("bottom_facing", Direction.class,
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+```
+
+**Changes:**
+1. **Import**: Change `DirectionProperty` to `EnumProperty`
+2. **Type**: Change `DirectionProperty` to `EnumProperty<Direction>`
+3. **Factory method**: Add `Direction.class` as the second parameter to `EnumProperty.of()`
+
+**Alternative**: If you're using standard facing properties without custom names, you can use the predefined properties from `net.minecraft.state.property.Properties`:
+- `Properties.HORIZONTAL_FACING` - for cardinal directions (N, E, S, W)
+- `Properties.FACING` - for all 6 directions
+- `Properties.HOPPER_FACING` - for hopper-like directions (excludes UP)
+
+**Why**: `DirectionProperty` was a convenience class that has been removed. `EnumProperty<Direction>` is the underlying implementation that should be used directly.
+
+#### Step 2.4: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
 
 **⚠️ IMPORTANT**: Starting in Minecraft 1.21.2, blocks and items require explicit `RegistryKey` during initialization. The current code may cause `NullPointerException: Block id not set` errors.
 
@@ -310,11 +369,14 @@ public static void register() {
 2. **If you see `NullPointerException: Block id not set`**, then implement registry keys
 3. **For maximum compatibility** with future versions, implement registry keys now
 
-#### Step 2.4: Update Yarn Mappings References (If Applicable)
+#### Step 2.5: Update Yarn Mappings References (If Applicable)
 
 Some method names may have changed in Yarn mappings between 1.21 and 1.21.10. Based on the analysis:
 
-**No breaking mapping changes detected in this codebase**, but be aware of:
+**Breaking mapping changes**:
+- `DirectionProperty` class removed (see Step 2.3 above)
+
+**Other known changes** (not affecting this mod):
 - `Entity#getWorld()` → `Entity#getEntityWorld()` (not used in this mod)
 - `Registry#getEntry()` → `Registry#getOptional()` (not used in this mod)
 - `Registry#getOrThrow()` → `Registry#getValueOrThrow()` (not used in this mod)
@@ -492,6 +554,30 @@ Block block = new CakeWoodBlock(createBlockSettings().registryKey(key));
 
 ---
 
+#### Issue: `cannot find symbol: class DirectionProperty`
+**Cause**: `DirectionProperty` class was removed in Minecraft 1.21.10 Yarn mappings
+
+**Solution**: Replace with `EnumProperty<Direction>`:
+```java
+// Old
+import net.minecraft.state.property.DirectionProperty;
+public static final DirectionProperty FACING = DirectionProperty.of("facing",
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+
+// New
+import net.minecraft.state.property.EnumProperty;
+public static final EnumProperty<Direction> FACING = EnumProperty.of("facing", Direction.class,
+        Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
+```
+
+Or use predefined properties from `Properties`:
+```java
+import net.minecraft.state.property.Properties;
+public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
+```
+
+---
+
 #### Issue: Build fails with "Unsupported class file major version"
 **Cause**: Gradle JVM or Java version mismatch
 
@@ -581,6 +667,8 @@ Then run: `./gradlew --refresh-dependencies`
 | **FabricBlockSettings** | Available | Removed | **High** | Replace with `AbstractBlock.Settings` |
 | **Data Generation API** | `*.datagen.v1.provider` | `*.client.datagen.v1.provider` | **High** | Update FabricModelProvider imports |
 | **Model Classes Package** | `net.minecraft.data.client` | `net.minecraft.client.data` | **High** | Update model generation imports |
+| **DataGen Source Set** | `src/main/java` | `src/client/java` | **High** | Move DataGeneratorEntrypoint with splitEnv |
+| **DirectionProperty** | Available | Removed | **High** | Replace with `EnumProperty<Direction>` |
 | **Registry Keys** | Optional | Required* | **High** | Add `.registryKey()` to settings |
 | **Entity#getWorld** | Available | Renamed | Low | Not used in this mod |
 | **ResourceManagerHelper** | Available | Deprecated | Low | Not used in this mod |
@@ -610,6 +698,9 @@ Use this checklist to track your upgrade progress:
 - [ ] Update method return types from `FabricBlockSettings` to `AbstractBlock.Settings`
 - [ ] Update FabricModelProvider import to client package (`*.client.datagen.v1.provider`)
 - [ ] Update model generation imports from `net.minecraft.data.client.*` to `net.minecraft.client.data.*`
+- [ ] Move DataGeneratorEntrypoint from `src/main/java` to `src/client/java` (if using splitEnvironmentSourceSets)
+- [ ] Replace `DirectionProperty` with `EnumProperty<Direction>` in all files
+- [ ] Add `Direction.class` parameter to `EnumProperty.of()` calls
 - [ ] Add registry keys to block registrations (if needed)
 - [ ] Add registry keys to item registrations (if needed)
 - [ ] Review and update any deprecated API usage
