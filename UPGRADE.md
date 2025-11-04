@@ -297,7 +297,91 @@ public static final EnumProperty<Direction> BOTTOM_FACING = EnumProperty.of("bot
 
 **Why**: `DirectionProperty` was a convenience class that has been removed. `EnumProperty<Direction>` is the underlying implementation that should be used directly.
 
-#### Step 2.4: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
+#### Step 2.4: Fix Additional Minecraft 1.21.10 API Changes
+
+**⚠️ BREAKING CHANGES**: Several core APIs changed in Minecraft 1.21.10.
+
+##### Change 1: World.isClient field → isClient() method
+
+**Files**: Any file using `world.isClient`
+
+**Current code:**
+```java
+if (!world.isClient) {
+    // server-side logic
+}
+return ActionResult.success(world.isClient);
+```
+
+**Updated code:**
+```java
+if (!world.isClient()) {
+    // server-side logic
+}
+return ActionResult.SUCCESS;
+```
+
+**Why**: The `isClient` field became private. Use the public `isClient()` method instead.
+
+##### Change 2: ActionResult.success(boolean) removed
+
+**Files**: Any file using `ActionResult.success()`
+
+**Current code:**
+```java
+return ActionResult.success(world.isClient);
+```
+
+**Updated code:**
+```java
+return ActionResult.SUCCESS;
+```
+
+**Why**: The `success(boolean)` factory method no longer exists. Use the `SUCCESS` constant directly for successful actions. For server-only success, use `ActionResult.SUCCESS_SERVER`.
+
+##### Change 3: Direction.fromHorizontal() renamed
+
+**Files**: Any file calculating direction from yaw/rotation
+
+**Current code:**
+```java
+Direction facing = Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3);
+```
+
+**Updated code:**
+```java
+Direction facing = Direction.fromHorizontalQuarterTurns((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3);
+```
+
+**Why**: Method renamed in Minecraft 1.21.10 Yarn mappings. The calculation logic remains the same.
+
+##### Change 4: Block.getComparatorOutput() signature changed
+
+**Files**: Any custom block with comparator output
+
+**Current code:**
+```java
+@Override
+public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    return someValue;
+}
+```
+
+**Updated code:**
+```java
+@Override
+protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
+    return someValue;
+}
+```
+
+**Changes:**
+1. **Add parameter**: `Direction direction` as 4th parameter
+2. **Change visibility**: `public` → `protected`
+
+**Why**: The comparator output now depends on which side is being read, matching vanilla behavior for directional comparator outputs.
+
+#### Step 2.5: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
 
 **⚠️ IMPORTANT**: Starting in Minecraft 1.21.2, blocks and items require explicit `RegistryKey` during initialization. The current code may cause `NullPointerException: Block id not set` errors.
 
@@ -369,7 +453,7 @@ public static void register() {
 2. **If you see `NullPointerException: Block id not set`**, then implement registry keys
 3. **For maximum compatibility** with future versions, implement registry keys now
 
-#### Step 2.5: Update Yarn Mappings References (If Applicable)
+#### Step 2.6: Update Yarn Mappings References (If Applicable)
 
 Some method names may have changed in Yarn mappings between 1.21 and 1.21.10. Based on the analysis:
 
@@ -578,6 +662,76 @@ public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACIN
 
 ---
 
+#### Issue: `isClient has private access in World`
+**Cause**: The `isClient` field became private in Minecraft 1.21.10
+
+**Solution**: Use the `isClient()` method instead:
+```java
+// Old
+if (!world.isClient) {
+    // server logic
+}
+
+// New
+if (!world.isClient()) {
+    // server logic
+}
+```
+
+Replace all instances of `world.isClient` with `world.isClient()`.
+
+---
+
+#### Issue: `cannot find symbol: method success(boolean)` in ActionResult
+**Cause**: The `ActionResult.success(boolean)` method was removed in Minecraft 1.21.10
+
+**Solution**: Use the `SUCCESS` constant directly:
+```java
+// Old
+return ActionResult.success(world.isClient);
+
+// New
+return ActionResult.SUCCESS;
+```
+
+For server-only success, use `ActionResult.SUCCESS_SERVER`.
+
+---
+
+#### Issue: `cannot find symbol: method fromHorizontal(int)`
+**Cause**: `Direction.fromHorizontal()` was renamed in Minecraft 1.21.10 Yarn mappings
+
+**Solution**: Use `fromHorizontalQuarterTurns()` instead:
+```java
+// Old
+Direction facing = Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3);
+
+// New
+Direction facing = Direction.fromHorizontalQuarterTurns((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3);
+```
+
+---
+
+#### Issue: `method does not override or implement a method from a supertype` for getComparatorOutput
+**Cause**: The `Block.getComparatorOutput()` method signature changed in Minecraft 1.21.10
+
+**Solution**: Update the method signature to include Direction parameter and change visibility:
+```java
+// Old
+@Override
+public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    return someValue;
+}
+
+// New
+@Override
+protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
+    return someValue;
+}
+```
+
+---
+
 #### Issue: Build fails with "Unsupported class file major version"
 **Cause**: Gradle JVM or Java version mismatch
 
@@ -669,6 +823,10 @@ Then run: `./gradlew --refresh-dependencies`
 | **Model Classes Package** | `net.minecraft.data.client` | `net.minecraft.client.data` | **High** | Update model generation imports |
 | **DataGen Source Set** | `src/main/java` | `src/client/java` | **High** | Move DataGeneratorEntrypoint with splitEnv |
 | **DirectionProperty** | Available | Removed | **High** | Replace with `EnumProperty<Direction>` |
+| **World.isClient** | Public field | Private field (use method) | **High** | Replace `world.isClient` with `world.isClient()` |
+| **ActionResult.success()** | `success(boolean)` | Removed | **High** | Use `ActionResult.SUCCESS` constant |
+| **Direction.fromHorizontal()** | Available | Renamed | **High** | Use `Direction.fromHorizontalQuarterTurns()` |
+| **Block.getComparatorOutput()** | 3 parameters, public | 4 parameters (+ Direction), protected | **High** | Update signature and visibility |
 | **Registry Keys** | Optional | Required* | **High** | Add `.registryKey()` to settings |
 | **Entity#getWorld** | Available | Renamed | Low | Not used in this mod |
 | **ResourceManagerHelper** | Available | Deprecated | Low | Not used in this mod |
@@ -701,6 +859,11 @@ Use this checklist to track your upgrade progress:
 - [ ] Move DataGeneratorEntrypoint from `src/main/java` to `src/client/java` (if using splitEnvironmentSourceSets)
 - [ ] Replace `DirectionProperty` with `EnumProperty<Direction>` in all files
 - [ ] Add `Direction.class` parameter to `EnumProperty.of()` calls
+- [ ] Replace all `world.isClient` field accesses with `world.isClient()` method calls
+- [ ] Replace all `ActionResult.success(boolean)` calls with `ActionResult.SUCCESS`
+- [ ] Replace `Direction.fromHorizontal()` with `Direction.fromHorizontalQuarterTurns()`
+- [ ] Update `getComparatorOutput()` signature: add Direction parameter, change to protected
+- [ ] Fix variable types for facing properties (`DirectionProperty` → `EnumProperty<Direction>`)
 - [ ] Add registry keys to block registrations (if needed)
 - [ ] Add registry keys to item registrations (if needed)
 - [ ] Review and update any deprecated API usage
