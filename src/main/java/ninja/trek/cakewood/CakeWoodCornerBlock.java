@@ -16,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -144,7 +145,7 @@ public class CakeWoodCornerBlock extends Block {
 
         // Handle waxing with honeycomb
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, true));
                 world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
@@ -152,12 +153,12 @@ public class CakeWoodCornerBlock extends Block {
                 }
                 player.swingHand(player.getActiveHand());
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // Handle unwaxing with axe
         if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, false));
                 world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
@@ -165,7 +166,7 @@ public class CakeWoodCornerBlock extends Block {
                 }
                 player.swingHand(player.getActiveHand());
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // If waxed, prevent eating
@@ -174,7 +175,7 @@ public class CakeWoodCornerBlock extends Block {
         }
 
         // Original eating logic
-        if (world.isClient) {
+        if (world.isClient()) {
             if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
@@ -286,7 +287,7 @@ public class CakeWoodCornerBlock extends Block {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return Math.max(MAX_BITES - state.get(TOP_BITES), MAX_BITES - state.get(BOTTOM_BITES));
     }
 }

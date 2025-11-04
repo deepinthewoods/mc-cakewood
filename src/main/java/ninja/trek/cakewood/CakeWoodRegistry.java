@@ -1,6 +1,6 @@
 package ninja.trek.cakewood;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
@@ -55,8 +55,8 @@ public class CakeWoodRegistry {
     private static final Map<String, CakeWoodCornerBlock> STRIPPED_CORNER_CAKE_WOOD_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> STRIPPED_CORNER_CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
 
-    private static FabricBlockSettings createBlockSettings() {
-        return FabricBlockSettings.create()
+    private static AbstractBlock.Settings createBlockSettings() {
+        return AbstractBlock.Settings.create()
                 .mapColor(MapColor.BROWN)
                 .strength(0.5f)
                 .sounds(BlockSoundGroup.WOOD)

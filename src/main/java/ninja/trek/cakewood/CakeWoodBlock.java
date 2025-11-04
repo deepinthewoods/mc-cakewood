@@ -10,7 +10,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -30,9 +30,9 @@ public class CakeWoodBlock extends Block {
     public static final int MAX_BITES = 8;
     public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);
     public static final IntProperty BOTTOM_BITES = IntProperty.of("bottom_bites", 0, MAX_BITES);
-    public static final DirectionProperty TOP_FACING = DirectionProperty.of("top_facing",
+    public static final EnumProperty<Direction> TOP_FACING = EnumProperty.of("top_facing", Direction.class,
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
-    public static final DirectionProperty BOTTOM_FACING = DirectionProperty.of("bottom_facing",
+    public static final EnumProperty<Direction> BOTTOM_FACING = EnumProperty.of("bottom_facing", Direction.class,
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     public static final BooleanProperty WAXED = BooleanProperty.of("waxed");
 
@@ -126,25 +126,25 @@ public class CakeWoodBlock extends Block {
 
         // Handle waxing with honeycomb
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, true));
                 world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
                     stack.decrement(1);
                 }
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // Handle unwaxing with axe
         if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, false));
                 world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 stack.setDamage(stack.getDamage() + 1);
                 player.swingHand(player.preferredHand);
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // If waxed, prevent eating
@@ -153,7 +153,7 @@ public class CakeWoodBlock extends Block {
         }
 
         // Original eating logic
-        if (world.isClient) {
+        if (world.isClient()) {
             if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
@@ -190,7 +190,7 @@ public class CakeWoodBlock extends Block {
         }
 
         IntProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
-        DirectionProperty facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
+        EnumProperty<Direction> facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
         int bites = state.get(bitesProp);
 
         if (bites >= MAX_BITES) {
@@ -198,7 +198,7 @@ public class CakeWoodBlock extends Block {
         }
 
         Direction facing = bites == 0
-                ? Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3)
+                ? Direction.fromHorizontalQuarterTurns((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3)
                 : state.get(facingProp);
 
         BlockState newState = state.with(bitesProp, bites + 1)
@@ -267,7 +267,7 @@ public class CakeWoodBlock extends Block {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return Math.max(MAX_BITES - state.get(TOP_BITES), MAX_BITES - state.get(BOTTOM_BITES));
     }
 }
