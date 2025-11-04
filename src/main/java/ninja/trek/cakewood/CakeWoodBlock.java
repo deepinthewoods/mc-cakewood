@@ -126,25 +126,25 @@ public class CakeWoodBlock extends Block {
 
         // Handle waxing with honeycomb
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, true));
                 world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
                     stack.decrement(1);
                 }
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // Handle unwaxing with axe
         if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
-            if (!world.isClient) {
+            if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, false));
                 world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 stack.setDamage(stack.getDamage() + 1);
                 player.swingHand(player.preferredHand);
             }
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         // If waxed, prevent eating
@@ -153,7 +153,7 @@ public class CakeWoodBlock extends Block {
         }
 
         // Original eating logic
-        if (world.isClient) {
+        if (world.isClient()) {
             if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
@@ -190,7 +190,7 @@ public class CakeWoodBlock extends Block {
         }
 
         IntProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
-        DirectionProperty facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
+        EnumProperty<Direction> facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
         int bites = state.get(bitesProp);
 
         if (bites >= MAX_BITES) {
@@ -198,7 +198,7 @@ public class CakeWoodBlock extends Block {
         }
 
         Direction facing = bites == 0
-                ? Direction.fromHorizontal((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3)
+                ? Direction.fromHorizontalQuarterTurns((int)((player.getYaw() * 4.0f / 360.0f) + 2.5f) & 3)
                 : state.get(facingProp);
 
         BlockState newState = state.with(bitesProp, bites + 1)
@@ -267,7 +267,7 @@ public class CakeWoodBlock extends Block {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
         return Math.max(MAX_BITES - state.get(TOP_BITES), MAX_BITES - state.get(BOTTOM_BITES));
     }
 }
