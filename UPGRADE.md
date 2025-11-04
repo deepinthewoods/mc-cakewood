@@ -211,7 +211,34 @@ private static AbstractBlock.Settings createBlockSettings() {
 
 **Method calls**: All builder methods (`.mapColor()`, `.strength()`, etc.) remain the same - the API is identical.
 
-#### Step 2.2: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
+#### Step 2.2: Fix Data Generation API Imports (1.21.4+ Requirement)
+
+**⚠️ CRITICAL CHANGE**: Starting in Minecraft 1.21.4, data generation APIs moved to client packages.
+
+**File**: `src/main/java/ninja/trek/cakewood/CakeWoodDataGenerator.java`
+
+**Current imports (lines 10-11):**
+```java
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.data.client.*;
+```
+
+**Updated imports:**
+```java
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.client.data.*;
+```
+
+**Changes:**
+1. **FabricModelProvider**: Moved from `net.fabricmc.fabric.api.datagen.v1.provider` to `net.fabricmc.fabric.api.client.datagen.v1.provider`
+2. **Model generation classes**: Moved from `net.minecraft.data.client.*` to `net.minecraft.client.data.*`
+   - This includes: `BlockStateModelGenerator`, `ItemModelGenerator`, `Model`, and related classes
+
+**Why**: In Minecraft 1.21.4+, Mojang moved data generation classes to the client environment. Fabric adapted by moving `FabricModelProvider` to the client API package. This is required because model generation is now client-side only.
+
+**Note**: The `build.gradle` file already has `client = true` configured in the `fabricApi.configureDataGeneration` block, which is required for these changes to work.
+
+#### Step 2.3: Add Registry Keys to Block and Item Registration (1.21.2+ Requirement)
 
 **⚠️ IMPORTANT**: Starting in Minecraft 1.21.2, blocks and items require explicit `RegistryKey` during initialization. The current code may cause `NullPointerException: Block id not set` errors.
 
@@ -283,7 +310,7 @@ public static void register() {
 2. **If you see `NullPointerException: Block id not set`**, then implement registry keys
 3. **For maximum compatibility** with future versions, implement registry keys now
 
-#### Step 2.3: Update Yarn Mappings References (If Applicable)
+#### Step 2.4: Update Yarn Mappings References (If Applicable)
 
 Some method names may have changed in Yarn mappings between 1.21 and 1.21.10. Based on the analysis:
 
@@ -428,6 +455,31 @@ AbstractBlock.Settings settings = AbstractBlock.Settings.create();
 
 ---
 
+#### Issue: `Cannot find symbol: FabricModelProvider`, `BlockStateModelGenerator`, or `ItemModelGenerator`
+**Cause**: Data generation API classes moved to client packages in Minecraft 1.21.4+
+
+**Solution**: Update imports in your data generator class:
+```java
+// Old imports
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.data.client.*;
+
+// New imports
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.client.data.*;
+```
+
+Also ensure `build.gradle` has client data generation enabled:
+```gradle
+fabricApi {
+    configureDataGeneration {
+        client = true
+    }
+}
+```
+
+---
+
 #### Issue: `NullPointerException: Block id not set` or `Item id not set`
 **Cause**: Registry keys not provided to Block/Item settings (required in 1.21.2+)
 
@@ -527,6 +579,8 @@ Then run: `./gradlew --refresh-dependencies`
 | **Fabric Loom** | 1.9-SNAPSHOT | 1.11.8 | Medium | Update build.gradle |
 | **Gradle** | 8.11.1 | 8.14+ | Medium | Update gradle-wrapper.properties |
 | **FabricBlockSettings** | Available | Removed | **High** | Replace with `AbstractBlock.Settings` |
+| **Data Generation API** | `*.datagen.v1.provider` | `*.client.datagen.v1.provider` | **High** | Update FabricModelProvider imports |
+| **Model Classes Package** | `net.minecraft.data.client` | `net.minecraft.client.data` | **High** | Update model generation imports |
 | **Registry Keys** | Optional | Required* | **High** | Add `.registryKey()` to settings |
 | **Entity#getWorld** | Available | Renamed | Low | Not used in this mod |
 | **ResourceManagerHelper** | Available | Deprecated | Low | Not used in this mod |
@@ -554,6 +608,8 @@ Use this checklist to track your upgrade progress:
 - [ ] Replace `FabricBlockSettings` import with `AbstractBlock`
 - [ ] Replace `FabricBlockSettings.create()` with `AbstractBlock.Settings.create()`
 - [ ] Update method return types from `FabricBlockSettings` to `AbstractBlock.Settings`
+- [ ] Update FabricModelProvider import to client package (`*.client.datagen.v1.provider`)
+- [ ] Update model generation imports from `net.minecraft.data.client.*` to `net.minecraft.client.data.*`
 - [ ] Add registry keys to block registrations (if needed)
 - [ ] Add registry keys to item registrations (if needed)
 - [ ] Review and update any deprecated API usage
