@@ -111,6 +111,26 @@ id 'fabric-loom' version '1.11.8'
 > **Why**: Loom 1.11+ is required for developing mods for Minecraft 1.21.9+. Version 1.11.8 is the latest stable release in the 1.11 series. It includes support for Gradle 8.10 and configuration caches.
 >
 > **Note**: If Loom 1.11.8 is not available or causes issues, you can use the latest version from the 1.11, 1.12, or 1.13 series. Check https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/ for available versions.
+>
+> **⚠️ IMPORTANT**: Fabric Loom 1.11.8 requires Gradle 8.14 or higher. If you see an error about Gradle version, proceed to Step 1.2a below.
+
+#### Step 1.2a: Update Gradle Wrapper (if needed)
+
+**File**: `gradle/wrapper/gradle-wrapper.properties`
+
+If you encounter an error like "Plugin net.fabricmc:fabric-loom:1.11.8 requires at least Gradle 8.14", you need to update your Gradle wrapper.
+
+**Current value (line 3):**
+```properties
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+```
+
+**Updated value:**
+```properties
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.14-bin.zip
+```
+
+> **Why**: Fabric Loom 1.11.8 requires Gradle 8.14 or higher. Older Gradle versions will fail with a compatibility error.
 
 #### Step 1.3: Update `fabric.mod.json` Dependencies
 
@@ -464,6 +484,18 @@ World world = entity.getEntityWorld();
 
 ---
 
+#### Issue: "Plugin net.fabricmc:fabric-loom:1.11.8 requires at least Gradle 8.14"
+**Cause**: Gradle wrapper using an older version incompatible with Fabric Loom 1.11.8
+
+**Solution**: Update `gradle/wrapper/gradle-wrapper.properties`:
+```properties
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.14-bin.zip
+```
+
+Then run: `./gradlew --refresh-dependencies`
+
+---
+
 #### Issue: Data generation fails
 **Cause**: Model generator API changes or file paths incorrect
 
@@ -492,7 +524,8 @@ World world = entity.getEntityWorld();
 | **Minecraft** | 1.21 | 1.21.10 | High | Update gradle.properties |
 | **Fabric Loader** | 0.16.10 | 0.17.2 | Medium | Update gradle.properties, fabric.mod.json |
 | **Fabric API** | 0.102.0+1.21 | 0.135.0+1.21.10 | Medium | Update gradle.properties |
-| **Fabric Loom** | 1.9-SNAPSHOT | 1.11 | Low | Update build.gradle |
+| **Fabric Loom** | 1.9-SNAPSHOT | 1.11.8 | Medium | Update build.gradle |
+| **Gradle** | 8.11.1 | 8.14+ | Medium | Update gradle-wrapper.properties |
 | **FabricBlockSettings** | Available | Removed | **High** | Replace with `AbstractBlock.Settings` |
 | **Registry Keys** | Optional | Required* | **High** | Add `.registryKey()` to settings |
 | **Entity#getWorld** | Available | Renamed | Low | Not used in this mod |
@@ -512,7 +545,8 @@ Use this checklist to track your upgrade progress:
 - [ ] Update `gradle.properties` → Fabric Loader to 0.17.2
 - [ ] Update `gradle.properties` → Fabric API to 0.137.0+1.21.10
 - [ ] Update `gradle.properties` → Yarn mappings to 1.21.10+build.1 (or latest)
-- [ ] Update `build.gradle` → Fabric Loom to 1.11
+- [ ] Update `build.gradle` → Fabric Loom to 1.11.8
+- [ ] Update `gradle/wrapper/gradle-wrapper.properties` → Gradle to 8.14+
 - [ ] Update `fabric.mod.json` → fabricloader dependency to >=0.17.2
 - [ ] Update `fabric.mod.json` → minecraft dependency to ~1.21.10
 
