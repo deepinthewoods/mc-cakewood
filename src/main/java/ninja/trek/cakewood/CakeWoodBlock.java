@@ -10,7 +10,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -30,9 +30,9 @@ public class CakeWoodBlock extends Block {
     public static final int MAX_BITES = 8;
     public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);
     public static final IntProperty BOTTOM_BITES = IntProperty.of("bottom_bites", 0, MAX_BITES);
-    public static final DirectionProperty TOP_FACING = DirectionProperty.of("top_facing",
+    public static final EnumProperty<Direction> TOP_FACING = EnumProperty.of("top_facing", Direction.class,
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
-    public static final DirectionProperty BOTTOM_FACING = DirectionProperty.of("bottom_facing",
+    public static final EnumProperty<Direction> BOTTOM_FACING = EnumProperty.of("bottom_facing", Direction.class,
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST);
     public static final BooleanProperty WAXED = BooleanProperty.of("waxed");
 
