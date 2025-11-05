@@ -2,24 +2,10 @@
 package ninja.trek.cakewood;
 
 import net.minecraft.block.SaplingGenerator;
-import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
-import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
-import ninja.trek.cakewood.CakeWood;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import net.minecraft.world.gen.feature.TreeFeatureConfig;
-import net.minecraft.world.gen.feature.TreeFeature;
-import net.minecraft.world.gen.feature.PlacedFeatures;
-import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 
 
 import java.util.Optional;
@@ -32,28 +18,12 @@ public class CakeWoodTree {
             RegistryKey.of(RegistryKeys.PLACED_FEATURE, CakeWood.id("cake_wood_tree"));
 
     /**
-     * Create a simple tree configuration.
-     * (For demonstration we use vanilla oak log and leaves. In a full mod you might want to use your custom blocks.)
-     */
-    public static ConfiguredFeature<TreeFeatureConfig, ?> createCakeWoodTreeFeature() {
-        TreeFeatureConfig config = new TreeFeatureConfig.Builder(
-                // For the trunk, you might substitute your own CakeWood log block instead of OAK_LOG
-                net.minecraft.world.gen.stateprovider.BlockStateProvider.of(Blocks.OAK_LOG),
-                new StraightTrunkPlacer(5, 2, 2),
-                // For the leaves, you can also substitute your own block if available.
-                net.minecraft.world.gen.stateprovider.BlockStateProvider.of(Blocks.OAK_LEAVES),
-                new BlobFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0), 3),
-                new TwoLayersFeatureSize(1, 0, 1)
-        )
-                .ignoreVines()
-                .build();
-        return new ConfiguredFeature<>(Feature.TREE, config);
-    }
-
-    /**
      * Create the sapling generator. The parameters link the sapling block with the configured feature.
      * In Minecraft 1.21+, the SaplingGenerator constructor signature changed.
      * It now expects: name, regularTreeKey, megaTreeKey, flowerTreeKey
+     *
+     * The actual tree feature configuration should be defined in a datapack JSON file at:
+     * data/cakewood/worldgen/configured_feature/cake_wood_tree.json
      */
     public static final SaplingGenerator CAKE_WOOD_SAPLING_GENERATOR =
             new SaplingGenerator(
@@ -64,18 +34,19 @@ public class CakeWoodTree {
             );
 
     /**
-     * Call this method during mod initialization to register features.
-     * Note: In modern Minecraft (1.21+), features should ideally be registered through
-     * data generation or bootstrap contexts. This method provides a fallback for direct registration.
+     * Note: In Minecraft 1.21+, configured and placed features are dynamic registries
+     * that should be registered through data generation or datapacks, not at runtime.
+     *
+     * The SaplingGenerator defined above will work with the registry keys, and the
+     * actual features should be defined in data/cakewood/worldgen/configured_feature/
+     * and data/cakewood/worldgen/placed_feature/ JSON files.
+     *
+     * For more information, see the Fabric wiki on world generation:
+     * https://fabricmc.net/wiki/tutorial:features
      */
     public static void register() {
-        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = createCakeWoodTreeFeature();
-        Registry.register(Registries.CONFIGURED_FEATURE, CAKE_WOOD_CONFIGURED_FEATURE_KEY.getValue(), configuredFeature);
-
-        // Create and register placed feature using the registered configured feature entry
-        RegistryEntry<ConfiguredFeature<?, ?>> configuredEntry =
-            Registries.CONFIGURED_FEATURE.getEntry(CAKE_WOOD_CONFIGURED_FEATURE_KEY).orElseThrow();
-        PlacedFeature placedFeature = new PlacedFeature(configuredEntry, PlacedFeatures.createCountExtraModifier(0, 0.0F, 1));
-        Registry.register(Registries.PLACED_FEATURE, CAKE_WOOD_PLACED_FEATURE_KEY.getValue(), placedFeature);
+        // Features are now registered through datapacks in modern Minecraft versions.
+        // No runtime registration needed - the SaplingGenerator will reference the
+        // registry keys which will be populated by the datapack system.
     }
 }
