@@ -147,7 +147,7 @@ public class CakeWoodCornerBlock extends Block {
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
             if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, true));
-                world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON.value(), SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
                     stack.decrement(1);
                 }
@@ -160,7 +160,7 @@ public class CakeWoodCornerBlock extends Block {
         if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
             if (!world.isClient()) {
                 world.setBlockState(pos, state.with(WAXED, false));
-                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF.value(), SoundCategory.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
                     stack.setDamage(stack.getDamage() + 1);
                 }
@@ -237,13 +237,13 @@ public class CakeWoodCornerBlock extends Block {
 
         // Play eating and breaking sounds
         world.playSound(null, pos,
-                SoundEvents.ENTITY_GENERIC_EAT,
+                SoundEvents.ENTITY_GENERIC_EAT.value(),
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f
         );
         world.playSound(null, pos,
-                SoundEvents.BLOCK_WOOD_BREAK,
+                SoundEvents.BLOCK_WOOD_BREAK.value(),
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f

@@ -66,12 +66,7 @@ public class CakeWoodRegistry {
     }
 
     private static BlockItem createBlockItem(Block block, String translationKey) {
-        return new BlockItem(block, new Item.Settings()) {
-            @Override
-            public Text getName() {
-                return Text.translatable(translationKey);
-            }
-        };
+        return new BlockItem(block, new Item.Settings());
     }
 
     // Getter methods for CakeWood variants
