@@ -1,7 +1,5 @@
 package ninja.trek.cakewood;
 
-// [Previous imports remain the same]
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
