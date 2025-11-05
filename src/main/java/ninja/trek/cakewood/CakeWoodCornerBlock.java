@@ -243,7 +243,7 @@ public class CakeWoodCornerBlock extends Block {
                 world.random.nextFloat() * 0.1f + 0.9f
         );
         world.playSound(null, pos,
-                SoundEvents.BLOCK_WOOD_BREAK.value(),
+                SoundEvents.BLOCK_WOOD_BREAK,
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f
