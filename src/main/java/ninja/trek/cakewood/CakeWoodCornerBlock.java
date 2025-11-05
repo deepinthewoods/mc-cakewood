@@ -237,7 +237,7 @@ public class CakeWoodCornerBlock extends Block {
 
         // Play eating and breaking sounds
         world.playSound(null, pos,
-                SoundEvents.ENTITY_GENERIC_EAT,
+                SoundEvents.ENTITY_GENERIC_EAT.value(),
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f

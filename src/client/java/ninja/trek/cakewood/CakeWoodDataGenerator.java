@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.client.data.*;
+import net.minecraft.data.client.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -27,6 +28,16 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
     private static class CakeWoodModelGenerator extends FabricModelProvider {
         public CakeWoodModelGenerator(FabricDataOutput output) {
             super(output);
+        }
+
+        private static int getRotationIndex(Direction facing) {
+            return switch (facing) {
+                case NORTH -> 0;  // 0 degrees
+                case EAST -> 1;   // 90 degrees
+                case SOUTH -> 2;  // 180 degrees
+                case WEST -> 3;   // 270 degrees
+                default -> 0;
+            };
         }
 
         @Override
@@ -183,13 +194,12 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     TextureMap.all(Identifier.of(
                             textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                             "block/" + textureId)),
-                    generator.writer
+                    generator.modelCollector
             );
         }
 
         private Model createBittenModel() {
             return new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
-                @Override
                 public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                     JsonObject json = new JsonObject();
                     json.addProperty("parent", "minecraft:block/block");
@@ -248,7 +258,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             Optional.empty(),
                             WOOD_TEXTURE
                     ) {
-                        @Override
                         public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                             JsonObject json = new JsonObject();
                             json.addProperty("parent", "minecraft:block/block");
@@ -384,7 +393,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 .set(isTop ? CakeWoodBlock.TOP_FACING : CakeWoodBlock.BOTTOM_FACING, facing);
                         stateSupplier.with(condition, BlockStateVariant.create()
                                 .put(VariantSettings.MODEL, modelId)
-                                .put(VariantSettings.Y, VariantSettings.Rotation.values()[(int) (facing.asRotation() / 90.0f)]));
+                                .put(VariantSettings.Y, VariantSettings.Rotation.values()[getRotationIndex(facing)]));
                     }
                 }
             }
@@ -401,7 +410,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                 textureRef = CakeWood.MOD_ID + ":block/" + textureId;
             }
             Model cornerModel = new Model(Optional.empty(), Optional.empty(), TextureKey.ALL) {
-                @Override
                 public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                     JsonObject json = new JsonObject();
                     json.addProperty("parent", "minecraft:block/block");
@@ -469,7 +477,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     TextureMap.all(Identifier.of(
                             textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                             "block/" + textureId)),
-                    generator.writer
+                    generator.modelCollector
             );
         }
 
@@ -491,7 +499,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 bites,
                                 facing.asString());
                         Model model = new Model(Optional.empty(), Optional.empty(), ALL) {
-                            @Override
                             public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                                 JsonObject json = new JsonObject();
                                 json.addProperty("parent", "minecraft:block/block");
