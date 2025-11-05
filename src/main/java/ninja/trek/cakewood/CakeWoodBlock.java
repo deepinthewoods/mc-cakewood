@@ -217,13 +217,13 @@ public class CakeWoodBlock extends Block {
 
         player.getHungerManager().add(2, 0.1F);
         world.playSound(null, pos,
-                SoundEvents.ENTITY_GENERIC_EAT,
+                SoundEvents.ENTITY_GENERIC_EAT.value(),
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f
         );
         world.playSound(null, pos,
-                SoundEvents.BLOCK_WOOD_BREAK,
+                SoundEvents.BLOCK_WOOD_BREAK.value(),
                 SoundCategory.BLOCKS,
                 0.5f,
                 world.random.nextFloat() * 0.1f + 0.9f
