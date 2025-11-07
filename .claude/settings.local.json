@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradlew build:*)",
+      "Bash(./gradlew build:*)",
+      "WebSearch",
+      "WebFetch(domain:maven.fabricmc.net)",
+      "WebFetch(domain:docs.fabricmc.net)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(./gradlew clean:*)",
+      "WebFetch(domain:fabricmc.net)",
+      "Bash(./gradlew:*)",
+      "WebFetch(domain:wiki.fabricmc.net)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

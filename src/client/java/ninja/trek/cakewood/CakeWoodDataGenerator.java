@@ -7,9 +7,13 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.client.data.*;
-import net.minecraft.data.client.*;
+import net.minecraft.client.render.model.json.ModelVariant;
+import net.minecraft.client.render.model.json.MultipartModelConditionBuilder;
+import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.BlockItem;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.AxisRotation;
 import net.minecraft.util.math.Direction;
 
 import java.util.Arrays;
@@ -28,13 +32,13 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
             super(output);
         }
 
-        private static int getRotationIndex(Direction facing) {
+        private static AxisRotation getYRotation(Direction facing) {
             return switch (facing) {
-                case NORTH -> 0;  // 0 degrees
-                case EAST -> 1;   // 90 degrees
-                case SOUTH -> 2;  // 180 degrees
-                case WEST -> 3;   // 270 degrees
-                default -> 0;
+                case NORTH -> AxisRotation.R0;
+                case EAST -> AxisRotation.R90;
+                case SOUTH -> AxisRotation.R180;
+                case WEST -> AxisRotation.R270;
+                default -> AxisRotation.R0;
             };
         }
 
@@ -177,10 +181,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
             }
         }
 
-        // [Previous helper methods remain the same]
-
-
-
         private void generateItemModel(ItemModelGenerator generator, BlockItem item, String textureId) {
             String textureRef = "minecraft:block/" + textureId;
             if (textureId.startsWith("cake_wood")) {
@@ -242,8 +242,9 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                           CakeWoodBlock block,
                                           String variantName,
                                           String textureId) {
-            MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
+            MultipartBlockModelDefinitionCreator creator = MultipartBlockModelDefinitionCreator.create(block);
             TextureKey WOOD_TEXTURE = TextureKey.of("wood_texture");
+
             for (int bites = 0; bites < CakeWoodBlock.MAX_BITES; bites++) {
                 final int bitesValue = bites;
                 for (boolean isTop : Arrays.asList(true, false)) {
@@ -251,6 +252,8 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             variantName,
                             isTop ? "top" : "bottom",
                             bites);
+
+                    // Create custom model with JSON generation
                     Model model = new Model(
                             Optional.of(Identifier.of(CakeWood.MOD_ID, "block/cake_wood_template")),
                             Optional.empty(),
@@ -275,7 +278,6 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             int depth = 16 - biteSize;      // remaining depth after bites
                             int yOffset = isTop ? 8 : 0;    // vertical position (top/bottom half)
                             int height = 8;                 // height of each half
-                            float depthFraction = depth / 16.0f; // For UV mapping
 
                             // Create elements array
                             JsonArray elements = new JsonArray();
@@ -302,10 +304,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             northFace.addProperty("texture", "#wood_texture");
                             northFace.addProperty("cullface", "north");
                             JsonArray northUV = new JsonArray();
-                            northUV.add(0);                     // u1
-                            northUV.add(isTop ? 8 : 0);        // v1
-                            northUV.add(16);                   // u2
-                            northUV.add(isTop ? 16 : 8);      // v2
+                            northUV.add(0);
+                            northUV.add(isTop ? 8 : 0);
+                            northUV.add(16);
+                            northUV.add(isTop ? 16 : 8);
                             northFace.add("uv", northUV);
                             faces.add("north", northFace);
 
@@ -313,10 +315,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             JsonObject southFace = new JsonObject();
                             southFace.addProperty("texture", "#wood_texture");
                             JsonArray southUV = new JsonArray();
-                            southUV.add(0);                    // u1
-                            southUV.add(isTop ? 8 : 0);       // v1
-                            southUV.add(16);                  // u2
-                            southUV.add(isTop ? 16 : 8);     // v2
+                            southUV.add(0);
+                            southUV.add(isTop ? 8 : 0);
+                            southUV.add(16);
+                            southUV.add(isTop ? 16 : 8);
                             southFace.add("uv", southUV);
                             faces.add("south", southFace);
 
@@ -324,10 +326,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             JsonObject eastFace = new JsonObject();
                             eastFace.addProperty("texture", "#wood_texture");
                             JsonArray eastUV = new JsonArray();
-                            eastUV.add(16 - depth);           // u1 (adjusted for bite)
-                            eastUV.add(isTop ? 8 : 0);       // v1
-                            eastUV.add(16);                  // u2
-                            eastUV.add(isTop ? 16 : 8);     // v2
+                            eastUV.add(16 - depth);
+                            eastUV.add(isTop ? 8 : 0);
+                            eastUV.add(16);
+                            eastUV.add(isTop ? 16 : 8);
                             eastFace.add("uv", eastUV);
                             faces.add("east", eastFace);
 
@@ -335,10 +337,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             JsonObject westFace = new JsonObject();
                             westFace.addProperty("texture", "#wood_texture");
                             JsonArray westUV = new JsonArray();
-                            westUV.add(0);                    // u1
-                            westUV.add(isTop ? 8 : 0);       // v1
-                            westUV.add(depth);               // u2 (adjusted for bite)
-                            westUV.add(isTop ? 16 : 8);     // v2
+                            westUV.add(0);
+                            westUV.add(isTop ? 8 : 0);
+                            westUV.add(depth);
+                            westUV.add(isTop ? 16 : 8);
                             westFace.add("uv", westUV);
                             faces.add("west", westFace);
 
@@ -347,10 +349,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             topFace.addProperty("texture", "#wood_texture");
                             if (isTop) topFace.addProperty("cullface", "up");
                             JsonArray topUV = new JsonArray();
-                            topUV.add(0);                     // u1
-                            topUV.add(0);                     // v1
-                            topUV.add(16);                    // u2
-                            topUV.add(depth);                 // v2 (adjusted for bite)
+                            topUV.add(0);
+                            topUV.add(0);
+                            topUV.add(16);
+                            topUV.add(depth);
                             topFace.add("uv", topUV);
                             faces.add("up", topFace);
 
@@ -359,10 +361,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                             bottomFace.addProperty("texture", "#wood_texture");
                             if (!isTop) bottomFace.addProperty("cullface", "down");
                             JsonArray bottomUV = new JsonArray();
-                            bottomUV.add(0);                   // u1
-                            bottomUV.add(0);                   // v1
-                            bottomUV.add(16);                  // u2
-                            bottomUV.add(depth);               // v2 (adjusted for bite)
+                            bottomUV.add(0);
+                            bottomUV.add(0);
+                            bottomUV.add(16);
+                            bottomUV.add(depth);
                             bottomFace.add("uv", bottomUV);
                             faces.add("down", bottomFace);
 
@@ -386,21 +388,30 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
 
                     // Create variants for every horizontal facing
                     for (Direction facing : Direction.Type.HORIZONTAL) {
-                        When condition = When.create()
-                                .set(isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES, bitesValue)
-                                .set(isTop ? CakeWoodBlock.TOP_FACING : CakeWoodBlock.BOTTOM_FACING, facing);
-                        stateSupplier.with(condition, BlockStateVariant.create()
-                                .put(VariantSettings.MODEL, modelId)
-                                .put(VariantSettings.Y, VariantSettings.Rotation.values()[getRotationIndex(facing)]));
+                        // Build the condition using the new API
+                        Property<Integer> bitesProperty = isTop ? CakeWoodBlock.TOP_BITES : CakeWoodBlock.BOTTOM_BITES;
+                        Property<Direction> facingProperty = isTop ? CakeWoodBlock.TOP_FACING : CakeWoodBlock.BOTTOM_FACING;
+
+                        MultipartModelConditionBuilder conditionBuilder = BlockStateModelGenerator.createMultipartConditionBuilder()
+                                .put(bitesProperty, bitesValue)
+                                .put(facingProperty, facing);
+
+                        // Create ModelVariant with rotation
+                        AxisRotation yRotation = getYRotation(facing);
+                        ModelVariant.ModelState modelState = ModelVariant.ModelState.DEFAULT.setRotationY(yRotation);
+                        ModelVariant variant = new ModelVariant(modelId, modelState);
+
+                        // Create WeightedVariant
+                        WeightedVariant weightedVariant = BlockStateModelGenerator.createWeightedVariant(variant);
+
+                        // Add to multipart creator
+                        creator.with(conditionBuilder.build(), weightedVariant);
                     }
                 }
             }
-            generator.blockStateCollector.accept(stateSupplier);
+
+            generator.blockStateCollector.accept(creator);
         }
-
-
-
-
 
         private void generateCornerItemModel(ItemModelGenerator generator, BlockItem item, String textureId) {
             String textureRef = "minecraft:block/" + textureId;
@@ -483,10 +494,10 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                                 CakeWoodCornerBlock block,
                                                 String variantName,
                                                 String textureId) {
-            // Log output (if desired)
-            CakeWood.LOGGER.info("corner var " + variantName);
-            MultipartBlockStateSupplier stateSupplier = MultipartBlockStateSupplier.create(block);
+            CakeWood.LOGGER.info("Generating corner variant model: " + variantName);
+            MultipartBlockModelDefinitionCreator creator = MultipartBlockModelDefinitionCreator.create(block);
             TextureKey ALL = TextureKey.of("all");
+
             for (int bites = 0; bites < CakeWoodCornerBlock.MAX_BITES; bites++) {
                 final int bitesValue = bites;
                 for (boolean isTop : Arrays.asList(true, false)) {
@@ -496,6 +507,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 isTop ? "top" : "bottom",
                                 bites,
                                 facing.asString());
+
                         Model model = new Model(Optional.empty(), Optional.empty(), ALL) {
                             public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
                                 JsonObject json = new JsonObject();
@@ -504,10 +516,12 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 texturesJson.addProperty("particle", textures.get(ALL).toString());
                                 texturesJson.addProperty("texture", textures.get(ALL).toString());
                                 json.add("textures", texturesJson);
+
                                 float size = 16.0f - (bitesValue * (16.0f / CakeWoodCornerBlock.MAX_BITES));
                                 float yMin = isTop ? 8.0f : 0.0f;
                                 float yMax = isTop ? 16.0f : 8.0f;
                                 float xFrom, xTo, zFrom, zTo;
+
                                 switch (facing) {
                                     case NORTHWEST:
                                         xFrom = 0; xTo = size; zFrom = 0; zTo = size;
@@ -525,6 +539,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                         xFrom = 0; xTo = size; zFrom = 0; zTo = size;
                                         break;
                                 }
+
                                 JsonArray elements = new JsonArray();
                                 JsonObject element = new JsonObject();
                                 JsonArray from = new JsonArray();
@@ -537,6 +552,7 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 to.add(yMax);
                                 to.add(zTo);
                                 element.add("to", to);
+
                                 JsonObject faces = new JsonObject();
                                 for (String face : new String[]{"north", "south", "east", "west", "up", "down"}) {
                                     JsonObject faceObj = new JsonObject();
@@ -562,23 +578,35 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                                 return json;
                             }
                         };
+
                         TextureMap textureMap = new TextureMap().put(ALL, Identifier.of(
                                 textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                                 "block/" + textureId));
+
                         Identifier modelId = model.upload(
                                 Identifier.of(CakeWood.MOD_ID, modelName),
                                 textureMap,
                                 generator.modelCollector
                         );
-                        When condition = When.create()
-                                .set(isTop ? CakeWoodCornerBlock.TOP_BITES : CakeWoodCornerBlock.BOTTOM_BITES, bitesValue)
-                                .set(isTop ? CakeWoodCornerBlock.TOP_FACING : CakeWoodCornerBlock.BOTTOM_FACING, facing);
-                        stateSupplier.with(condition, BlockStateVariant.create()
-                                .put(VariantSettings.MODEL, modelId));
+
+                        // Build condition for this combination
+                        Property<Integer> bitesProperty = isTop ? CakeWoodCornerBlock.TOP_BITES : CakeWoodCornerBlock.BOTTOM_BITES;
+                        Property<CakeWoodCornerBlock.DiagonalDirection> facingProperty = isTop ? CakeWoodCornerBlock.TOP_FACING : CakeWoodCornerBlock.BOTTOM_FACING;
+
+                        MultipartModelConditionBuilder conditionBuilder = BlockStateModelGenerator.createMultipartConditionBuilder()
+                                .put(bitesProperty, bitesValue)
+                                .put(facingProperty, facing);
+
+                        // Create variant (no rotation needed for corners as facing is baked into model)
+                        ModelVariant variant = new ModelVariant(modelId, ModelVariant.ModelState.DEFAULT);
+                        WeightedVariant weightedVariant = BlockStateModelGenerator.createWeightedVariant(variant);
+
+                        creator.with(conditionBuilder.build(), weightedVariant);
                     }
                 }
             }
-            generator.blockStateCollector.accept(stateSupplier);
+
+            generator.blockStateCollector.accept(creator);
         }
     }
 }
