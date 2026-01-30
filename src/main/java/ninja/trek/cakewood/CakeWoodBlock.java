@@ -43,13 +43,11 @@ import net.minecraft.sound.SoundCategory;
  * The base block model is built with the bite opening facing SOUTH (geometry extends from z=0 to
  * z=depth). The data generator maps facing→Y rotation as follows:
  * <ul>
- *   <li>NORTH → R0 (outputs y=180 in JSON, i.e. base model flipped to face north)</li>
- *   <li>EAST  → R90 (outputs y=270)</li>
- *   <li>SOUTH → R180 (outputs y=0, no rotation needed)</li>
- *   <li>WEST  → R270 (outputs y=90)</li>
+ *   <li>SOUTH → R0 (y=0, no rotation needed — bite already on south)</li>
+ *   <li>WEST  → R90 (y=90, rotates bite from south to west)</li>
+ *   <li>NORTH → R180 (y=180, rotates bite from south to north)</li>
+ *   <li>EAST  → R270 (y=270, rotates bite from south to east)</li>
  * </ul>
- * Note: {@code AxisRotation} values are offset by 180° from the final JSON y-rotation.
- * This is a Minecraft/Fabric API convention, not a bug — the output rotations are correct.
  */
 public class CakeWoodBlock extends Block {
     public static final int MAX_BITES = 8;
@@ -147,7 +145,7 @@ public class CakeWoodBlock extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        ItemStack stack = player.getStackInHand(player.preferredHand);
+        ItemStack stack = player.getMainHandStack();
 
         // Handle waxing with honeycomb
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
@@ -167,7 +165,7 @@ public class CakeWoodBlock extends Block {
                 world.setBlockState(pos, state.with(WAXED, false));
                 world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 stack.setDamage(stack.getDamage() + 1);
-                player.swingHand(player.preferredHand);
+                player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
             }
             return ActionResult.SUCCESS;
         }

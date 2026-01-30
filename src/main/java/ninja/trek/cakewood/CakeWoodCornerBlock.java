@@ -159,7 +159,7 @@ public class CakeWoodCornerBlock extends Block {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        ItemStack stack = player.getStackInHand(player.preferredHand);
+        ItemStack stack = player.getMainHandStack();
 
         // Handle waxing with honeycomb
         if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
@@ -169,7 +169,7 @@ public class CakeWoodCornerBlock extends Block {
                 if (!player.isCreative()) {
                     stack.decrement(1);
                 }
-                player.swingHand(player.getActiveHand());
+                player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
             }
             return ActionResult.SUCCESS;
         }
@@ -182,7 +182,7 @@ public class CakeWoodCornerBlock extends Block {
                 if (!player.isCreative()) {
                     stack.setDamage(stack.getDamage() + 1);
                 }
-                player.swingHand(player.getActiveHand());
+                player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
             }
             return ActionResult.SUCCESS;
         }

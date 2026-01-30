@@ -2,7 +2,8 @@
   "multipart": [
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0"
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0",
+        "y": 180
       },
       "when": {
         "top_bites": "0",
@@ -12,7 +13,7 @@
     {
       "apply": {
         "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0",
-        "y": 90
+        "y": 270
       },
       "when": {
         "top_bites": "0",
@@ -21,8 +22,7 @@
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0",
-        "y": 180
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0"
       },
       "when": {
         "top_bites": "0",
@@ -32,11 +32,31 @@
     {
       "apply": {
         "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_0",
-        "y": 270
+        "y": 90
       },
       "when": {
         "top_bites": "0",
         "top_facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_0",
+        "y": 180
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_0",
+        "y": 270
+      },
+      "when": {
+        "bottom_bites": "0",
+        "bottom_facing": "east"
       }
     },
     {
@@ -45,7 +65,7 @@
       },
       "when": {
         "bottom_bites": "0",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -55,27 +75,27 @@
       },
       "when": {
         "bottom_bites": "0",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_0",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_1",
         "y": 180
       },
       "when": {
-        "bottom_bites": "0",
-        "bottom_facing": "south"
+        "top_bites": "1",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_0",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_1",
         "y": 270
       },
       "when": {
-        "bottom_bites": "0",
-        "bottom_facing": "west"
+        "top_bites": "1",
+        "top_facing": "east"
       }
     },
     {
@@ -84,7 +104,7 @@
       },
       "when": {
         "top_bites": "1",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -94,27 +114,27 @@
       },
       "when": {
         "top_bites": "1",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_1",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_1",
         "y": 180
       },
       "when": {
-        "top_bites": "1",
-        "top_facing": "south"
+        "bottom_bites": "1",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_1",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_1",
         "y": 270
       },
       "when": {
-        "top_bites": "1",
-        "top_facing": "west"
+        "bottom_bites": "1",
+        "bottom_facing": "east"
       }
     },
     {
@@ -123,7 +143,7 @@
       },
       "when": {
         "bottom_bites": "1",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -133,27 +153,27 @@
       },
       "when": {
         "bottom_bites": "1",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_1",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_2",
         "y": 180
       },
       "when": {
-        "bottom_bites": "1",
-        "bottom_facing": "south"
+        "top_bites": "2",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_1",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_2",
         "y": 270
       },
       "when": {
-        "bottom_bites": "1",
-        "bottom_facing": "west"
+        "top_bites": "2",
+        "top_facing": "east"
       }
     },
     {
@@ -162,7 +182,7 @@
       },
       "when": {
         "top_bites": "2",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -172,27 +192,27 @@
       },
       "when": {
         "top_bites": "2",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_2",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_2",
         "y": 180
       },
       "when": {
-        "top_bites": "2",
-        "top_facing": "south"
+        "bottom_bites": "2",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_2",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_2",
         "y": 270
       },
       "when": {
-        "top_bites": "2",
-        "top_facing": "west"
+        "bottom_bites": "2",
+        "bottom_facing": "east"
       }
     },
     {
@@ -201,7 +221,7 @@
       },
       "when": {
         "bottom_bites": "2",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -211,27 +231,27 @@
       },
       "when": {
         "bottom_bites": "2",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_2",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_3",
         "y": 180
       },
       "when": {
-        "bottom_bites": "2",
-        "bottom_facing": "south"
+        "top_bites": "3",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_2",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_3",
         "y": 270
       },
       "when": {
-        "bottom_bites": "2",
-        "bottom_facing": "west"
+        "top_bites": "3",
+        "top_facing": "east"
       }
     },
     {
@@ -240,7 +260,7 @@
       },
       "when": {
         "top_bites": "3",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -250,27 +270,27 @@
       },
       "when": {
         "top_bites": "3",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_3",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_3",
         "y": 180
       },
       "when": {
-        "top_bites": "3",
-        "top_facing": "south"
+        "bottom_bites": "3",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_3",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_3",
         "y": 270
       },
       "when": {
-        "top_bites": "3",
-        "top_facing": "west"
+        "bottom_bites": "3",
+        "bottom_facing": "east"
       }
     },
     {
@@ -279,7 +299,7 @@
       },
       "when": {
         "bottom_bites": "3",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -289,27 +309,27 @@
       },
       "when": {
         "bottom_bites": "3",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_3",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_4",
         "y": 180
       },
       "when": {
-        "bottom_bites": "3",
-        "bottom_facing": "south"
+        "top_bites": "4",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_3",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_4",
         "y": 270
       },
       "when": {
-        "bottom_bites": "3",
-        "bottom_facing": "west"
+        "top_bites": "4",
+        "top_facing": "east"
       }
     },
     {
@@ -318,7 +338,7 @@
       },
       "when": {
         "top_bites": "4",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -328,27 +348,27 @@
       },
       "when": {
         "top_bites": "4",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_4",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_4",
         "y": 180
       },
       "when": {
-        "top_bites": "4",
-        "top_facing": "south"
+        "bottom_bites": "4",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_4",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_4",
         "y": 270
       },
       "when": {
-        "top_bites": "4",
-        "top_facing": "west"
+        "bottom_bites": "4",
+        "bottom_facing": "east"
       }
     },
     {
@@ -357,7 +377,7 @@
       },
       "when": {
         "bottom_bites": "4",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -367,27 +387,27 @@
       },
       "when": {
         "bottom_bites": "4",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_4",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_5",
         "y": 180
       },
       "when": {
-        "bottom_bites": "4",
-        "bottom_facing": "south"
+        "top_bites": "5",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_4",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_5",
         "y": 270
       },
       "when": {
-        "bottom_bites": "4",
-        "bottom_facing": "west"
+        "top_bites": "5",
+        "top_facing": "east"
       }
     },
     {
@@ -396,7 +416,7 @@
       },
       "when": {
         "top_bites": "5",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -406,27 +426,27 @@
       },
       "when": {
         "top_bites": "5",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_5",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_5",
         "y": 180
       },
       "when": {
-        "top_bites": "5",
-        "top_facing": "south"
+        "bottom_bites": "5",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_5",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_5",
         "y": 270
       },
       "when": {
-        "top_bites": "5",
-        "top_facing": "west"
+        "bottom_bites": "5",
+        "bottom_facing": "east"
       }
     },
     {
@@ -435,7 +455,7 @@
       },
       "when": {
         "bottom_bites": "5",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -445,27 +465,27 @@
       },
       "when": {
         "bottom_bites": "5",
-        "bottom_facing": "east"
+        "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_5",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_6",
         "y": 180
       },
       "when": {
-        "bottom_bites": "5",
-        "bottom_facing": "south"
+        "top_bites": "6",
+        "top_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_5",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_6",
         "y": 270
       },
       "when": {
-        "bottom_bites": "5",
-        "bottom_facing": "west"
+        "top_bites": "6",
+        "top_facing": "east"
       }
     },
     {
@@ -474,7 +494,7 @@
       },
       "when": {
         "top_bites": "6",
-        "top_facing": "north"
+        "top_facing": "south"
       }
     },
     {
@@ -484,27 +504,27 @@
       },
       "when": {
         "top_bites": "6",
-        "top_facing": "east"
+        "top_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_6",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_6",
         "y": 180
       },
       "when": {
-        "top_bites": "6",
-        "top_facing": "south"
+        "bottom_bites": "6",
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_6",
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_6",
         "y": 270
       },
       "when": {
-        "top_bites": "6",
-        "top_facing": "west"
+        "bottom_bites": "6",
+        "bottom_facing": "east"
       }
     },
     {
@@ -513,7 +533,7 @@
       },
       "when": {
         "bottom_bites": "6",
-        "bottom_facing": "north"
+        "bottom_facing": "south"
       }
     },
     {
@@ -523,32 +543,13 @@
       },
       "when": {
         "bottom_bites": "6",
-        "bottom_facing": "east"
-      }
-    },
-    {
-      "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_6",
-        "y": 180
-      },
-      "when": {
-        "bottom_bites": "6",
-        "bottom_facing": "south"
-      }
-    },
-    {
-      "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_6",
-        "y": 270
-      },
-      "when": {
-        "bottom_bites": "6",
         "bottom_facing": "west"
       }
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7"
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7",
+        "y": 180
       },
       "when": {
         "top_bites": "7",
@@ -558,7 +559,7 @@
     {
       "apply": {
         "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7",
-        "y": 90
+        "y": 270
       },
       "when": {
         "top_bites": "7",
@@ -567,8 +568,7 @@
     },
     {
       "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7",
-        "y": 180
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7"
       },
       "when": {
         "top_bites": "7",
@@ -578,30 +578,11 @@
     {
       "apply": {
         "model": "cakewood:block/jungle_veneered_cake_wood_planks_top_7",
-        "y": 270
+        "y": 90
       },
       "when": {
         "top_bites": "7",
         "top_facing": "west"
-      }
-    },
-    {
-      "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_7"
-      },
-      "when": {
-        "bottom_bites": "7",
-        "bottom_facing": "north"
-      }
-    },
-    {
-      "apply": {
-        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_7",
-        "y": 90
-      },
-      "when": {
-        "bottom_bites": "7",
-        "bottom_facing": "east"
       }
     },
     {
@@ -611,13 +592,32 @@
       },
       "when": {
         "bottom_bites": "7",
-        "bottom_facing": "south"
+        "bottom_facing": "north"
       }
     },
     {
       "apply": {
         "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_7",
         "y": 270
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_7"
+      },
+      "when": {
+        "bottom_bites": "7",
+        "bottom_facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "cakewood:block/jungle_veneered_cake_wood_planks_bottom_7",
+        "y": 90
       },
       "when": {
         "bottom_bites": "7",
