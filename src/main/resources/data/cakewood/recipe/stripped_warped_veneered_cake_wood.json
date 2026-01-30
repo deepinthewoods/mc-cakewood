@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SCS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stripped_warped_stem",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:stripped_warped_veneered_cake_wood",
+    "count": 9
+  }
+}

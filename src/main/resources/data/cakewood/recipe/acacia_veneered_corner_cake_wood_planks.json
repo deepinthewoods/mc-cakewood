@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P  ",
+    "PC ",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:acacia_planks",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:acacia_veneered_corner_cake_wood_planks",
+    "count": 6
+  }
+}

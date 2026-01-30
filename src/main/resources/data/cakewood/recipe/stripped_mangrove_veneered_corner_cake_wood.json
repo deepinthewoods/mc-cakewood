@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S  ",
+    "SC ",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stripped_mangrove_log",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:stripped_mangrove_veneered_corner_cake_wood",
+    "count": 6
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:dark_oak_log",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:dark_oak_veneered_cake_wood",
+    "count": 9
+  }
+}

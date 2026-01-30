@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:spruce_log",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:spruce_veneered_cake_wood",
+    "count": 9
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:acacia_log",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:acacia_veneered_cake_wood",
+    "count": 9
+  }
+}

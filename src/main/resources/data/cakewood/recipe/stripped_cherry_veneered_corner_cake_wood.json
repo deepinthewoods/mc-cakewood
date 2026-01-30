@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "S  ",
+    "SC ",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stripped_cherry_log",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:stripped_cherry_veneered_corner_cake_wood",
+    "count": 6
+  }
+}

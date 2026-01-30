@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "L  ",
+    "LC ",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:bamboo_block",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:bamboo_veneered_corner_cake_wood",
+    "count": 6
+  }
+}

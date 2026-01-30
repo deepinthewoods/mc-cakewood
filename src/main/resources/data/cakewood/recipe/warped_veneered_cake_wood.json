@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LLL",
+    "LCL",
+    "LLL"
+  ],
+  "key": {
+    "L": "minecraft:warped_stem",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:warped_veneered_cake_wood",
+    "count": 9
+  }
+}

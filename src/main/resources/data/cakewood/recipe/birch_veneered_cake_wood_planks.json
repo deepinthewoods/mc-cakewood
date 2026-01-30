@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PCP",
+    "PPP"
+  ],
+  "key": {
+    "P": "minecraft:birch_planks",
+    "C": "minecraft:cake"
+  },
+  "result": {
+    "id": "cakewood:birch_veneered_cake_wood_planks",
+    "count": 9
+  }
+}
