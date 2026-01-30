@@ -13,7 +13,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -27,6 +26,25 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.StringIdentifiable;
 
+/**
+ * A corner variant of the edible cake-wood block with diagonal bite directions.
+ *
+ * <h3>Block State Properties</h3>
+ * <ul>
+ *   <li>{@code top_bites} (0–8): Number of bites taken from the top half. 8 = fully eaten.</li>
+ *   <li>{@code bottom_bites} (0–8): Number of bites taken from the bottom half.</li>
+ *   <li>{@code top_facing} (northwest|northeast|southeast|southwest): Diagonal direction the top
+ *       bite occupies. The remaining geometry is anchored to this corner and shrinks as bites
+ *       are taken. Set on first bite based on player yaw.</li>
+ *   <li>{@code bottom_facing}: Same as top_facing but for the bottom half.</li>
+ *   <li>{@code waxed} (true|false): When waxed with honeycomb, the block cannot be eaten.</li>
+ * </ul>
+ *
+ * <h3>Model Generation</h3>
+ * Unlike {@link CakeWoodBlock}, corner models do not use Y-rotation. Instead, the diagonal
+ * facing direction is baked directly into each model's geometry coordinates. Each combination
+ * of (bites, half, diagonal direction) has its own dedicated model file.
+ */
 public class CakeWoodCornerBlock extends Block {
     public static final int MAX_BITES = 8;
     public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);

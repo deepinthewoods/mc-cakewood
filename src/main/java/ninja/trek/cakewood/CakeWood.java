@@ -14,6 +14,11 @@ public class CakeWood implements ModInitializer {
         // Register all CakeWood variants
         CakeWoodRegistry.register();
 
+        // TODO: Register sapling block and call CakeWoodTree.register() once sapling/tree WIP is complete.
+        //   - Add sapling block + item registration in CakeWoodRegistry
+        //   - Create placed_feature JSON for cake_wood_tree (configured_feature exists but placed_feature is missing)
+        //   - Verify SaplingGenerator constructor matches current MC API
+
         LOGGER.info("CakeWood Mod Initialized - Let them eat cake... wood!");
     }
 

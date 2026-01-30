@@ -187,13 +187,15 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                 textureRef = CakeWood.MOD_ID + ":block/" + textureId;
             }
             Model bittenModel = createBittenModel();
-            bittenModel.upload(
+            Identifier modelId = bittenModel.upload(
                     ModelIds.getItemModelId(item),
                     TextureMap.all(Identifier.of(
                             textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                             "block/" + textureId)),
                     generator.modelCollector
             );
+            // Register item model definition (items/<item>.json) for MC 1.21.4+ item model system
+            generator.output.accept(item, ItemModels.basic(modelId));
         }
 
         private Model createBittenModel() {
@@ -481,13 +483,15 @@ public class CakeWoodDataGenerator implements DataGeneratorEntrypoint {
                     return element;
                 }
             };
-            cornerModel.upload(
+            Identifier modelId = cornerModel.upload(
                     ModelIds.getItemModelId(item),
                     TextureMap.all(Identifier.of(
                             textureId.startsWith("cake_wood") ? CakeWood.MOD_ID : "minecraft",
                             "block/" + textureId)),
                     generator.modelCollector
             );
+            // Register item model definition (items/<item>.json) for MC 1.21.4+ item model system
+            generator.output.accept(item, ItemModels.basic(modelId));
         }
 
         private void generateCornerVariantModel(BlockStateModelGenerator generator,

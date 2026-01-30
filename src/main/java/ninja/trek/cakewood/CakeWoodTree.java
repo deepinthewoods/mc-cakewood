@@ -10,6 +10,12 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 import java.util.Optional;
 
+// TODO [WIP]: Sapling/tree feature is incomplete.
+//   - CakeWoodSaplingBlock is not registered in CakeWoodRegistry
+//   - Missing placed_feature JSON (data/cakewood/worldgen/placed_feature/cake_wood_tree.json)
+//   - configured_feature exists but uses spruce_leaves as placeholder foliage
+//   - SaplingGenerator constructor may need updating for current MC version
+//   - Tag files (saplings.json) reference unregistered cakewood:cakewood_sapling
 public class CakeWoodTree {
     // Create registry keys (note we use our mod id via CakeWood.id(...))
     public static final RegistryKey<ConfiguredFeature<?, ?>> CAKE_WOOD_CONFIGURED_FEATURE_KEY =

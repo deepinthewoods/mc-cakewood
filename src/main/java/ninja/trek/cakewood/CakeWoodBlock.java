@@ -13,7 +13,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,6 +25,32 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.sound.SoundCategory;
 
+/**
+ * An edible block that can be bitten from the top and bottom halves independently.
+ *
+ * <h3>Block State Properties</h3>
+ * <ul>
+ *   <li>{@code top_bites} (0–8): Number of bites taken from the top half. 8 = fully eaten.</li>
+ *   <li>{@code bottom_bites} (0–8): Number of bites taken from the bottom half. 8 = fully eaten.</li>
+ *   <li>{@code top_facing} (north|east|south|west): Cardinal direction the top bite approaches FROM.
+ *       Set on first bite based on player yaw. The block geometry shrinks inward from this side.</li>
+ *   <li>{@code bottom_facing}: Same as top_facing but for the bottom half.</li>
+ *   <li>{@code waxed} (true|false): When waxed with honeycomb, the block cannot be eaten.
+ *       Use an axe to remove wax.</li>
+ * </ul>
+ *
+ * <h3>Model Rotation (Data Generator)</h3>
+ * The base block model is built with the bite opening facing SOUTH (geometry extends from z=0 to
+ * z=depth). The data generator maps facing→Y rotation as follows:
+ * <ul>
+ *   <li>NORTH → R0 (outputs y=180 in JSON, i.e. base model flipped to face north)</li>
+ *   <li>EAST  → R90 (outputs y=270)</li>
+ *   <li>SOUTH → R180 (outputs y=0, no rotation needed)</li>
+ *   <li>WEST  → R270 (outputs y=90)</li>
+ * </ul>
+ * Note: {@code AxisRotation} values are offset by 180° from the final JSON y-rotation.
+ * This is a Minecraft/Fabric API convention, not a bug — the output rotations are correct.
+ */
 public class CakeWoodBlock extends Block {
     public static final int MAX_BITES = 8;
     public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);
