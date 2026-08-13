@@ -1,14 +1,12 @@
 // File: src/main/java/ninja/trek/cakewood/world/gen/tree/CakeWoodTree.java
 package ninja.trek.cakewood;
 
-import net.minecraft.block.SaplingGenerator;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.PlacedFeature;
-
-
 import java.util.Optional;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 // TODO [WIP]: Sapling/tree feature is incomplete.
 //   - CakeWoodSaplingBlock is not registered in CakeWoodRegistry
@@ -18,10 +16,10 @@ import java.util.Optional;
 //   - Tag files (saplings.json) reference unregistered cakewood:cakewood_sapling
 public class CakeWoodTree {
     // Create registry keys (note we use our mod id via CakeWood.id(...))
-    public static final RegistryKey<ConfiguredFeature<?, ?>> CAKE_WOOD_CONFIGURED_FEATURE_KEY =
-            RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, CakeWood.id("cake_wood_tree"));
-    public static final RegistryKey<PlacedFeature> CAKE_WOOD_PLACED_FEATURE_KEY =
-            RegistryKey.of(RegistryKeys.PLACED_FEATURE, CakeWood.id("cake_wood_tree"));
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CAKE_WOOD_CONFIGURED_FEATURE_KEY =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, CakeWood.id("cake_wood_tree"));
+    public static final ResourceKey<PlacedFeature> CAKE_WOOD_PLACED_FEATURE_KEY =
+            ResourceKey.create(Registries.PLACED_FEATURE, CakeWood.id("cake_wood_tree"));
 
     /**
      * Create the sapling generator. The parameters link the sapling block with the configured feature.
@@ -31,8 +29,8 @@ public class CakeWoodTree {
      * The actual tree feature configuration should be defined in a datapack JSON file at:
      * data/cakewood/worldgen/configured_feature/cake_wood_tree.json
      */
-    public static final SaplingGenerator CAKE_WOOD_SAPLING_GENERATOR =
-            new SaplingGenerator(
+    public static final TreeGrower CAKE_WOOD_SAPLING_GENERATOR =
+            new TreeGrower(
                     "cakewood:cake_wood_tree",
                     Optional.of(CAKE_WOOD_CONFIGURED_FEATURE_KEY),
                     Optional.empty(),

@@ -1,22 +1,28 @@
 package ninja.trek.cakewood;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 
 public class CakeWoodRegistry {
+    // Stripping map: maps non-stripped blocks to their stripped counterparts
+    private static final Map<Block, Block> STRIPPING_MAP = new HashMap<>();
+
+    public static Block getStrippedBlock(Block block) {
+        return STRIPPING_MAP.get(block);
+    }
+
     // Base CakeWood blocks and items (initialized in register())
     public static CakeWoodBlock CAKE_WOOD_BLOCK;
     public static CakeWoodBlock CAKE_WOOD_PLANKS_BLOCK;
@@ -57,21 +63,21 @@ public class CakeWoodRegistry {
     private static final Map<String, CakeWoodCornerBlock> STRIPPED_CORNER_CAKE_WOOD_VARIANTS = new HashMap<>();
     private static final Map<String, BlockItem> STRIPPED_CORNER_CAKE_WOOD_VARIANT_ITEMS = new HashMap<>();
 
-    private static AbstractBlock.Settings createBlockSettings(Identifier id) {
-        return AbstractBlock.Settings.create()
-                .registryKey(RegistryKey.of(RegistryKeys.BLOCK, id))
-                .mapColor(MapColor.BROWN)
+    private static BlockBehaviour.Properties createBlockSettings(Identifier id) {
+        return BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, id))
+                .mapColor(MapColor.COLOR_BROWN)
                 .strength(0.5f)
-                .sounds(BlockSoundGroup.WOOD)
-                .nonOpaque()
-                .pistonBehavior(PistonBehavior.DESTROY)
-                .breakInstantly();
+                .sound(SoundType.WOOD)
+                .noOcclusion()
+                .pushReaction(PushReaction.DESTROY)
+                .instabreak();
     }
 
     private static BlockItem createBlockItem(Block block, Identifier id) {
-        return new BlockItem(block, new Item.Settings()
-                .registryKey(RegistryKey.of(RegistryKeys.ITEM, id))
-                .useBlockPrefixedTranslationKey());
+        return new BlockItem(block, new Item.Properties()
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .useBlockDescriptionPrefix());
     }
 
     // Getter methods for CakeWood variants
@@ -131,41 +137,45 @@ public class CakeWoodRegistry {
         Identifier cakeWoodId = CakeWood.id("cake_wood");
         CAKE_WOOD_BLOCK = new CakeWoodBlock(createBlockSettings(cakeWoodId));
         CAKE_WOOD_ITEM = createBlockItem(CAKE_WOOD_BLOCK, cakeWoodId);
-        Registry.register(Registries.BLOCK, cakeWoodId, CAKE_WOOD_BLOCK);
-        Registry.register(Registries.ITEM, cakeWoodId, CAKE_WOOD_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, cakeWoodId, CAKE_WOOD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, cakeWoodId, CAKE_WOOD_ITEM);
 
         Identifier cakeWoodPlanksId = CakeWood.id("cake_wood_planks");
         CAKE_WOOD_PLANKS_BLOCK = new CakeWoodBlock(createBlockSettings(cakeWoodPlanksId));
         CAKE_WOOD_PLANKS_ITEM = createBlockItem(CAKE_WOOD_PLANKS_BLOCK, cakeWoodPlanksId);
-        Registry.register(Registries.BLOCK, cakeWoodPlanksId, CAKE_WOOD_PLANKS_BLOCK);
-        Registry.register(Registries.ITEM, cakeWoodPlanksId, CAKE_WOOD_PLANKS_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, cakeWoodPlanksId, CAKE_WOOD_PLANKS_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, cakeWoodPlanksId, CAKE_WOOD_PLANKS_ITEM);
 
         // Register base Stripped CakeWood
         Identifier strippedCakeWoodId = CakeWood.id("stripped_cake_wood");
         STRIPPED_CAKE_WOOD_BLOCK = new CakeWoodBlock(createBlockSettings(strippedCakeWoodId));
         STRIPPED_CAKE_WOOD_ITEM = createBlockItem(STRIPPED_CAKE_WOOD_BLOCK, strippedCakeWoodId);
-        Registry.register(Registries.BLOCK, strippedCakeWoodId, STRIPPED_CAKE_WOOD_BLOCK);
-        Registry.register(Registries.ITEM, strippedCakeWoodId, STRIPPED_CAKE_WOOD_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, strippedCakeWoodId, STRIPPED_CAKE_WOOD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, strippedCakeWoodId, STRIPPED_CAKE_WOOD_ITEM);
 
         // Register base CornerCakeWood and CornerCakeWood Planks
         Identifier cornerCakeWoodId = CakeWood.id("corner_cake_wood");
         CORNER_CAKE_WOOD_BLOCK = new CakeWoodCornerBlock(createBlockSettings(cornerCakeWoodId));
         CORNER_CAKE_WOOD_ITEM = createBlockItem(CORNER_CAKE_WOOD_BLOCK, cornerCakeWoodId);
-        Registry.register(Registries.BLOCK, cornerCakeWoodId, CORNER_CAKE_WOOD_BLOCK);
-        Registry.register(Registries.ITEM, cornerCakeWoodId, CORNER_CAKE_WOOD_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, cornerCakeWoodId, CORNER_CAKE_WOOD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, cornerCakeWoodId, CORNER_CAKE_WOOD_ITEM);
 
         Identifier cornerCakeWoodPlanksId = CakeWood.id("corner_cake_wood_planks");
         CORNER_CAKE_WOOD_PLANKS_BLOCK = new CakeWoodCornerBlock(createBlockSettings(cornerCakeWoodPlanksId));
         CORNER_CAKE_WOOD_PLANKS_ITEM = createBlockItem(CORNER_CAKE_WOOD_PLANKS_BLOCK, cornerCakeWoodPlanksId);
-        Registry.register(Registries.BLOCK, cornerCakeWoodPlanksId, CORNER_CAKE_WOOD_PLANKS_BLOCK);
-        Registry.register(Registries.ITEM, cornerCakeWoodPlanksId, CORNER_CAKE_WOOD_PLANKS_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, cornerCakeWoodPlanksId, CORNER_CAKE_WOOD_PLANKS_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, cornerCakeWoodPlanksId, CORNER_CAKE_WOOD_PLANKS_ITEM);
 
         // Register base Stripped Corner CakeWood
         Identifier strippedCornerCakeWoodId = CakeWood.id("stripped_corner_cake_wood");
         STRIPPED_CORNER_CAKE_WOOD_BLOCK = new CakeWoodCornerBlock(createBlockSettings(strippedCornerCakeWoodId));
         STRIPPED_CORNER_CAKE_WOOD_ITEM = createBlockItem(STRIPPED_CORNER_CAKE_WOOD_BLOCK, strippedCornerCakeWoodId);
-        Registry.register(Registries.BLOCK, strippedCornerCakeWoodId, STRIPPED_CORNER_CAKE_WOOD_BLOCK);
-        Registry.register(Registries.ITEM, strippedCornerCakeWoodId, STRIPPED_CORNER_CAKE_WOOD_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, strippedCornerCakeWoodId, STRIPPED_CORNER_CAKE_WOOD_BLOCK);
+        Registry.register(BuiltInRegistries.ITEM, strippedCornerCakeWoodId, STRIPPED_CORNER_CAKE_WOOD_ITEM);
+
+        // Register stripping mappings for base blocks
+        STRIPPING_MAP.put(CAKE_WOOD_BLOCK, STRIPPED_CAKE_WOOD_BLOCK);
+        STRIPPING_MAP.put(CORNER_CAKE_WOOD_BLOCK, STRIPPED_CORNER_CAKE_WOOD_BLOCK);
 
         // Register all wood variants
         registerVariant("oak", "Oak-Veneered");
@@ -209,24 +219,24 @@ public class CakeWoodRegistry {
         BlockItem strippedCornerWoodItem = createBlockItem(strippedCornerWoodBlock, strippedCornerWoodId);
 
         // Register CakeWood blocks and items
-        Registry.register(Registries.BLOCK, woodId, woodBlock);
-        Registry.register(Registries.ITEM, woodId, woodItem);
-        Registry.register(Registries.BLOCK, plankId, plankBlock);
-        Registry.register(Registries.ITEM, plankId, plankItem);
+        Registry.register(BuiltInRegistries.BLOCK, woodId, woodBlock);
+        Registry.register(BuiltInRegistries.ITEM, woodId, woodItem);
+        Registry.register(BuiltInRegistries.BLOCK, plankId, plankBlock);
+        Registry.register(BuiltInRegistries.ITEM, plankId, plankItem);
 
         // Register Stripped CakeWood blocks and items
-        Registry.register(Registries.BLOCK, strippedWoodId, strippedWoodBlock);
-        Registry.register(Registries.ITEM, strippedWoodId, strippedWoodItem);
+        Registry.register(BuiltInRegistries.BLOCK, strippedWoodId, strippedWoodBlock);
+        Registry.register(BuiltInRegistries.ITEM, strippedWoodId, strippedWoodItem);
 
         // Register CornerCakeWood blocks and items
-        Registry.register(Registries.BLOCK, cornerWoodId, cornerWoodBlock);
-        Registry.register(Registries.ITEM, cornerWoodId, cornerWoodItem);
-        Registry.register(Registries.BLOCK, cornerPlankId, cornerPlankBlock);
-        Registry.register(Registries.ITEM, cornerPlankId, cornerPlankItem);
+        Registry.register(BuiltInRegistries.BLOCK, cornerWoodId, cornerWoodBlock);
+        Registry.register(BuiltInRegistries.ITEM, cornerWoodId, cornerWoodItem);
+        Registry.register(BuiltInRegistries.BLOCK, cornerPlankId, cornerPlankBlock);
+        Registry.register(BuiltInRegistries.ITEM, cornerPlankId, cornerPlankItem);
 
         // Register Stripped CornerCakeWood blocks and items
-        Registry.register(Registries.BLOCK, strippedCornerWoodId, strippedCornerWoodBlock);
-        Registry.register(Registries.ITEM, strippedCornerWoodId, strippedCornerWoodItem);
+        Registry.register(BuiltInRegistries.BLOCK, strippedCornerWoodId, strippedCornerWoodBlock);
+        Registry.register(BuiltInRegistries.ITEM, strippedCornerWoodId, strippedCornerWoodItem);
 
         // Store in maps
         CAKE_WOOD_VARIANTS.put(woodType, woodBlock);
@@ -246,6 +256,10 @@ public class CakeWoodRegistry {
         // Store stripped corner variants in maps
         STRIPPED_CORNER_CAKE_WOOD_VARIANTS.put(woodType, strippedCornerWoodBlock);
         STRIPPED_CORNER_CAKE_WOOD_VARIANT_ITEMS.put(woodType, strippedCornerWoodItem);
+
+        // Register stripping mappings
+        STRIPPING_MAP.put(woodBlock, strippedWoodBlock);
+        STRIPPING_MAP.put(cornerWoodBlock, strippedCornerWoodBlock);
     }
 
     // Extended getter methods

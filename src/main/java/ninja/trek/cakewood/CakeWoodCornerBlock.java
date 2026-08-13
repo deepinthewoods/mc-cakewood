@@ -1,30 +1,30 @@
 package ninja.trek.cakewood;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.HoneycombItem;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.HoneycombItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * A corner variant of the edible cake-wood block with diagonal bite directions.
@@ -47,12 +47,12 @@ import net.minecraft.util.StringIdentifiable;
  */
 public class CakeWoodCornerBlock extends Block {
     public static final int MAX_BITES = 8;
-    public static final IntProperty TOP_BITES = IntProperty.of("top_bites", 0, MAX_BITES);
-    public static final IntProperty BOTTOM_BITES = IntProperty.of("bottom_bites", 0, MAX_BITES);
+    public static final IntegerProperty TOP_BITES = IntegerProperty.create("top_bites", 0, MAX_BITES);
+    public static final IntegerProperty BOTTOM_BITES = IntegerProperty.create("bottom_bites", 0, MAX_BITES);
 //    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final BooleanProperty WAXED = BooleanProperty.of("waxed");
+    public static final BooleanProperty WAXED = BooleanProperty.create("waxed");
 
-    public enum DiagonalDirection implements StringIdentifiable {
+    public enum DiagonalDirection implements StringRepresentable {
         NORTHWEST("northwest"),
         NORTHEAST("northeast"),
         SOUTHWEST("southwest"),
@@ -65,13 +65,13 @@ public class CakeWoodCornerBlock extends Block {
         }
 
         @Override
-        public String asString() {
+        public String getSerializedName() {
             return this.name;
         }
 
-        public static DiagonalDirection fromPlayerView(PlayerEntity player, Vec3d hitPos) {
+        public static DiagonalDirection fromPlayerView(Player player, Vec3 hitPos) {
 
-            float yaw = (player.getYaw() % 360 + 360 + 180 - 45) % 360;
+            float yaw = (player.getYRot() % 360 + 360 + 180 - 45) % 360;
 
 
             if (yaw >= 315 || yaw < 45) {
@@ -91,43 +91,43 @@ public class CakeWoodCornerBlock extends Block {
     }
 
     public static final EnumProperty<DiagonalDirection> TOP_FACING =
-            EnumProperty.of("top_facing", DiagonalDirection.class);
+            EnumProperty.create("top_facing", DiagonalDirection.class);
     public static final EnumProperty<DiagonalDirection> BOTTOM_FACING =
-            EnumProperty.of("bottom_facing", DiagonalDirection.class);
+            EnumProperty.create("bottom_facing", DiagonalDirection.class);
 
-    public CakeWoodCornerBlock(Settings settings) {
+    public CakeWoodCornerBlock(Properties settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState()
-                .with(TOP_BITES, 0)
-                .with(BOTTOM_BITES, 0)
-                .with(TOP_FACING, DiagonalDirection.NORTHWEST)
-                .with(BOTTOM_FACING, DiagonalDirection.NORTHWEST)
-                .with(WAXED, false));
+        registerDefaultState(getStateDefinition().any()
+                .setValue(TOP_BITES, 0)
+                .setValue(BOTTOM_BITES, 0)
+                .setValue(TOP_FACING, DiagonalDirection.NORTHWEST)
+                .setValue(BOTTOM_FACING, DiagonalDirection.NORTHWEST)
+                .setValue(WAXED, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(TOP_BITES, BOTTOM_BITES, TOP_FACING, BOTTOM_FACING, WAXED);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        int topBites = state.get(TOP_BITES);
-        int bottomBites = state.get(BOTTOM_BITES);
-        DiagonalDirection topFacing = state.get(TOP_FACING);
-        DiagonalDirection bottomFacing = state.get(BOTTOM_FACING);
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        int topBites = state.getValue(TOP_BITES);
+        int bottomBites = state.getValue(BOTTOM_BITES);
+        DiagonalDirection topFacing = state.getValue(TOP_FACING);
+        DiagonalDirection bottomFacing = state.getValue(BOTTOM_FACING);
 
-        VoxelShape topShape = topBites >= MAX_BITES ? VoxelShapes.empty() :
+        VoxelShape topShape = topBites >= MAX_BITES ? Shapes.empty() :
                 getHalfShape(topBites, true, topFacing);
-        VoxelShape bottomShape = bottomBites >= MAX_BITES ? VoxelShapes.empty() :
+        VoxelShape bottomShape = bottomBites >= MAX_BITES ? Shapes.empty() :
                 getHalfShape(bottomBites, false, bottomFacing);
 
-        return VoxelShapes.union(topShape, bottomShape);
+        return Shapes.or(topShape, bottomShape);
     }
 
     private VoxelShape getHalfShape(int bites, boolean isTop, DiagonalDirection facing) {
         if (bites >= MAX_BITES) {
-            return VoxelShapes.empty();
+            return Shapes.empty();
         }
         // Compute how much of the block remains (using a 16‐pixel “grid”)
         float biteSize = bites * (16.0f / MAX_BITES);
@@ -137,19 +137,19 @@ public class CakeWoodCornerBlock extends Block {
         float yMax = isTop ? 1.0f : 0.5f;
 
         return switch (facing) {
-            case NORTHWEST -> VoxelShapes.cuboid(
+            case NORTHWEST -> Shapes.box(
                     0.0f, yMin, 0.0f,
                     fraction, yMax, fraction
             );
-            case NORTHEAST -> VoxelShapes.cuboid(
+            case NORTHEAST -> Shapes.box(
                     1.0f - fraction, yMin, 0.0f,
                     1.0f, yMax, fraction
             );
-            case SOUTHEAST -> VoxelShapes.cuboid(
+            case SOUTHEAST -> Shapes.box(
                     1.0f - fraction, yMin, 1.0f - fraction,
                     1.0f, yMax, 1.0f
             );
-            case SOUTHWEST -> VoxelShapes.cuboid(
+            case SOUTHWEST -> Shapes.box(
                     0.0f, yMin, 1.0f - fraction,
                     fraction, yMax, 1.0f
             );
@@ -158,119 +158,167 @@ public class CakeWoodCornerBlock extends Block {
 
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        ItemStack stack = player.getMainHandStack();
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+        ItemStack stack = player.getMainHandItem();
 
         // Handle waxing with honeycomb
-        if (stack.getItem() instanceof HoneycombItem && !state.get(WAXED)) {
-            if (!world.isClient()) {
-                world.setBlockState(pos, state.with(WAXED, true));
-                world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        if (stack.getItem() instanceof HoneycombItem && !state.getValue(WAXED)) {
+            if (!world.isClientSide()) {
+                world.setBlockAndUpdate(pos, state.setValue(WAXED, true));
+                world.playSound(null, pos, SoundEvents.HONEYCOMB_WAX_ON, SoundSource.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
-                    stack.decrement(1);
+                    stack.shrink(1);
                 }
-                player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+                player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         // Handle unwaxing with axe
-        if (stack.getItem() instanceof AxeItem && state.get(WAXED)) {
-            if (!world.isClient()) {
-                world.setBlockState(pos, state.with(WAXED, false));
-                world.playSound(null, pos, SoundEvents.ITEM_AXE_WAX_OFF, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        if (stack.getItem() instanceof AxeItem && state.getValue(WAXED)) {
+            if (!world.isClientSide()) {
+                world.setBlockAndUpdate(pos, state.setValue(WAXED, false));
+                world.playSound(null, pos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0f, 1.0f);
                 if (!player.isCreative()) {
-                    stack.setDamage(stack.getDamage() + 1);
+                    stack.setDamageValue(stack.getDamageValue() + 1);
                 }
-                player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+                player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
+        }
+
+        // Handle stripping with axe (unwaxed block)
+        if (stack.getItem() instanceof AxeItem && !state.getValue(WAXED)) {
+            Block strippedBlock = CakeWoodRegistry.getStrippedBlock(state.getBlock());
+            if (strippedBlock != null) {
+                if (!world.isClientSide()) {
+                    BlockState strippedState = strippedBlock.defaultBlockState()
+                            .setValue(TOP_BITES, state.getValue(TOP_BITES))
+                            .setValue(BOTTOM_BITES, state.getValue(BOTTOM_BITES))
+                            .setValue(TOP_FACING, state.getValue(TOP_FACING))
+                            .setValue(BOTTOM_FACING, state.getValue(BOTTOM_FACING))
+                            .setValue(WAXED, false);
+                    world.setBlockAndUpdate(pos, strippedState);
+                    world.playSound(null, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    if (!player.isCreative()) {
+                        stack.setDamageValue(stack.getDamageValue() + 1);
+                    }
+                    player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+                }
+                return InteractionResult.SUCCESS;
+            }
         }
 
         // If waxed, prevent eating
-        if (state.get(WAXED)) {
-            return ActionResult.PASS;
+        if (state.getValue(WAXED)) {
+            return InteractionResult.PASS;
         }
 
         // Original eating logic
-        if (world.isClient()) {
-            if (eatCakeWood(world, pos, state, player, hit).isAccepted()) {
-                return ActionResult.SUCCESS;
+        if (world.isClientSide()) {
+            if (canEatCakeWood(state, player, hit, pos)) {
+                return InteractionResult.SUCCESS;
             }
-            return ActionResult.CONSUME;
+            return InteractionResult.CONSUME;
         }
         return eatCakeWood(world, pos, state, player, hit);
     }
 
-    private ActionResult eatCakeWood(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockHitResult hit) {
-        if (!player.canConsume(true)) {
-            return ActionResult.PASS;
+    private boolean canEatCakeWood(BlockState state, Player player, BlockHitResult hit, BlockPos pos) {
+        if (!player.canEat(true)) {
+            return false;
         }
 
-        Vec3d hitPos = hit.getPos().subtract(pos.getX(), pos.getY(), pos.getZ());
+        Vec3 hitPos = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
         boolean isTopHalf = hitPos.y >= 0.5;
 
-        int topBites = state.get(TOP_BITES);
-        int bottomBites = state.get(BOTTOM_BITES);
-        DiagonalDirection topFacing = state.get(TOP_FACING);
-        DiagonalDirection bottomFacing = state.get(BOTTOM_FACING);
+        int topBites = state.getValue(TOP_BITES);
+        int bottomBites = state.getValue(BOTTOM_BITES);
+        DiagonalDirection topFacing = state.getValue(TOP_FACING);
+        DiagonalDirection bottomFacing = state.getValue(BOTTOM_FACING);
+
+        if (isTopHalf && !doesPointIntersectHalf(hitPos, topBites, true, topFacing)) {
+            if (doesPointIntersectHalf(hitPos, bottomBites, false, bottomFacing)) {
+                isTopHalf = false;
+            } else {
+                return false;
+            }
+        }
+
+        IntegerProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
+        int bites = state.getValue(bitesProp);
+        return bites < MAX_BITES;
+    }
+
+    private InteractionResult eatCakeWood(Level world, BlockPos pos, BlockState state, Player player, BlockHitResult hit) {
+        if (!player.canEat(true)) {
+            return InteractionResult.PASS;
+        }
+
+        Vec3 hitPos = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+        boolean isTopHalf = hitPos.y >= 0.5;
+
+        int topBites = state.getValue(TOP_BITES);
+        int bottomBites = state.getValue(BOTTOM_BITES);
+        DiagonalDirection topFacing = state.getValue(TOP_FACING);
+        DiagonalDirection bottomFacing = state.getValue(BOTTOM_FACING);
 
         // Check if the hit position intersects with the remaining cake shape
         if (isTopHalf && !doesPointIntersectHalf(hitPos, topBites, true, topFacing)) {
             if (doesPointIntersectHalf(hitPos, bottomBites, false, bottomFacing)) {
                 isTopHalf = false;
             } else {
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
         }
 
-        IntProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
+        IntegerProperty bitesProp = isTopHalf ? TOP_BITES : BOTTOM_BITES;
         EnumProperty<DiagonalDirection> facingProp = isTopHalf ? TOP_FACING : BOTTOM_FACING;
-        int bites = state.get(bitesProp);
+        int bites = state.getValue(bitesProp);
 
         if (bites >= MAX_BITES) {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
 
         // Use the new direction logic for the first bite
         DiagonalDirection facing = bites == 0
                 ? DiagonalDirection.fromPlayerView(player, hitPos)
-                : state.get(facingProp);
-//        LOGGER.info("facing " + facing);
-        BlockState newState = state.with(bitesProp, bites + 1)
-                .with(facingProp, facing);
+                : state.getValue(facingProp);
 
-        world.setBlockState(pos, newState,
-                Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
+        BlockState newState = state.setValue(bitesProp, bites + 1)
+                .setValue(facingProp, facing);
 
-        if (newState.get(TOP_BITES) >= MAX_BITES &&
-                newState.get(BOTTOM_BITES) >= MAX_BITES) {
+        world.setBlock(pos, newState,
+                Block.UPDATE_ALL | Block.UPDATE_IMMEDIATE | Block.UPDATE_KNOWN_SHAPE);
+
+        if (newState.getValue(TOP_BITES) >= MAX_BITES &&
+                newState.getValue(BOTTOM_BITES) >= MAX_BITES) {
             world.removeBlock(pos, false);
-            world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
+            world.gameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         } else {
-            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
         }
 
-        player.getHungerManager().add(2, 0.1F);
+        player.getFoodData().eat(2, 0.1F);
 
         // Play eating and breaking sounds
         world.playSound(null, pos,
-                SoundEvents.ENTITY_GENERIC_EAT.value(),
-                SoundCategory.BLOCKS,
+                SoundEvents.GENERIC_EAT.value(),
+                SoundSource.BLOCKS,
                 0.5f,
-                world.random.nextFloat() * 0.1f + 0.9f
+                world.getRandom().nextFloat() * 0.1f + 0.9f
         );
         world.playSound(null, pos,
-                SoundEvents.BLOCK_WOOD_BREAK,
-                SoundCategory.BLOCKS,
+                SoundEvents.WOOD_BREAK,
+                SoundSource.BLOCKS,
                 0.5f,
-                world.random.nextFloat() * 0.1f + 0.9f
+                world.getRandom().nextFloat() * 0.1f + 0.9f
         );
 
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
-    private boolean doesPointIntersectHalf(Vec3d point, int bites, boolean isTop, DiagonalDirection facing) {
+    private boolean doesPointIntersectHalf(Vec3 point, int bites, boolean isTop, DiagonalDirection facing) {
         if (bites >= MAX_BITES) {
             return false;
         }
@@ -294,18 +342,18 @@ public class CakeWoodCornerBlock extends Block {
 
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         // Just return default state - direction will be set on first bite
-        return getDefaultState();
+        return defaultBlockState();
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos, Direction direction) {
-        return Math.max(MAX_BITES - state.get(TOP_BITES), MAX_BITES - state.get(BOTTOM_BITES));
+    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, Direction direction) {
+        return Math.max(MAX_BITES - state.getValue(TOP_BITES), MAX_BITES - state.getValue(BOTTOM_BITES));
     }
 }

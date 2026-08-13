@@ -1,12 +1,12 @@
 // File: src/main/java/ninja/trek/cakewood/CakeWoodSaplingBlock.java
 package ninja.trek.cakewood;
 
-import net.minecraft.block.SaplingBlock;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.SaplingGenerator;
+import net.minecraft.world.level.block.SaplingBlock;
+import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class CakeWoodSaplingBlock extends SaplingBlock {
-    public CakeWoodSaplingBlock(SaplingGenerator generator, AbstractBlock.Settings settings) {
+    public CakeWoodSaplingBlock(TreeGrower generator, BlockBehaviour.Properties settings) {
         super(generator, settings);
     }
 }
