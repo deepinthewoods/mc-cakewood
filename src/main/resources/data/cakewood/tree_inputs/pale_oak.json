@@ -1,0 +1,5 @@
+{
+  "sapling": "minecraft:pale_oak_sapling",
+  "profile": "pale_oak",
+  "foliage": [{ "block": "minecraft:pale_oak_leaves", "weight": 1 }]
+}

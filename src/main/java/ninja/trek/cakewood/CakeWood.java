@@ -1,7 +1,9 @@
 package ninja.trek.cakewood;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +15,10 @@ public class CakeWood implements ModInitializer {
     public void onInitialize() {
         // Register all CakeWood variants
         CakeWoodRegistry.register();
-
-        // TODO: Register sapling block and call CakeWoodTree.register() once sapling/tree WIP is complete.
-        //   - Add sapling block + item registration in CakeWoodRegistry
-        //   - Create placed_feature JSON for cake_wood_tree (configured_feature exists but placed_feature is missing)
-        //   - Verify SaplingGenerator constructor matches current MC API
+        CakeWoodTree.register();
+        CreativeModeTabEvents.MODIFY_OUTPUT_ALL.register((group, entries) -> {
+            if (group == CreativeModeTabs.getDefaultTab()) entries.accept(CakeWoodRegistry.CAKE_WOOD_SAPLING_ITEM);
+        });
 
         LOGGER.info("CakeWood Mod Initialized - Let them eat cake... wood!");
     }

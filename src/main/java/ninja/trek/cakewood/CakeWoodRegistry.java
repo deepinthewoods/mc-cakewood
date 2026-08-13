@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -28,6 +29,8 @@ public class CakeWoodRegistry {
     public static CakeWoodBlock CAKE_WOOD_PLANKS_BLOCK;
     public static BlockItem CAKE_WOOD_ITEM;
     public static BlockItem CAKE_WOOD_PLANKS_ITEM;
+    public static CakeWoodSaplingBlock CAKE_WOOD_SAPLING;
+    public static BlockItem CAKE_WOOD_SAPLING_ITEM;
 
     // Base Stripped CakeWood blocks and items
     public static CakeWoodBlock STRIPPED_CAKE_WOOD_BLOCK;
@@ -133,6 +136,14 @@ public class CakeWoodRegistry {
     }
 
     public static void register() {
+        Identifier saplingId = CakeWood.id("cakewood_sapling");
+        CAKE_WOOD_SAPLING = new CakeWoodSaplingBlock(CakeWoodTree.CAKE_WOOD_SAPLING_GENERATOR,
+                BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING)
+                        .setId(ResourceKey.create(Registries.BLOCK, saplingId)));
+        CAKE_WOOD_SAPLING_ITEM = createBlockItem(CAKE_WOOD_SAPLING, saplingId);
+        Registry.register(BuiltInRegistries.BLOCK, saplingId, CAKE_WOOD_SAPLING);
+        Registry.register(BuiltInRegistries.ITEM, saplingId, CAKE_WOOD_SAPLING_ITEM);
+
         // Register base CakeWood and CakeWood Planks
         Identifier cakeWoodId = CakeWood.id("cake_wood");
         CAKE_WOOD_BLOCK = new CakeWoodBlock(createBlockSettings(cakeWoodId));

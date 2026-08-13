@@ -1,0 +1,5 @@
+{
+  "sapling": "minecraft:azalea",
+  "profile": "azalea",
+  "foliage": [{ "block": "minecraft:azalea_leaves", "weight": 1 }]
+}

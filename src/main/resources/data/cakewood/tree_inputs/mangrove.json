@@ -1,0 +1,5 @@
+{
+  "sapling": "minecraft:mangrove_propagule",
+  "profile": "mangrove",
+  "foliage": [{ "block": "minecraft:mangrove_leaves", "weight": 1 }]
+}
